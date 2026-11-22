@@ -1,0 +1,19 @@
+{
+  "name": "vigie-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that makes coding agents check known vulnerabilities across several public databases (OSV, CISA KEV, EPSS, CERT-FR). No account, no API key, no dependency.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "vigie-mcp": "src/server.mjs",
+    "vigie-hook": "bin/vigie-hook.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test",
+    "start": "node src/server.mjs"
+  },
+  "keywords": ["mcp", "security", "vulnerabilities", "osv", "cert-fr", "kev", "epss", "coding-agents"]
+}
