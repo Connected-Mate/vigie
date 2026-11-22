@@ -3,23 +3,23 @@
 import { createInterface } from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import { realpathSync } from 'node:fs';
-import { checkPackages, checkTechnologies, formatReport, formatTechnologies, sourcesList, providers } from './analyse.mjs';
-import { readProject } from './projet.mjs';
+import { checkPackages, checkProject, checkTechnologies, formatReport, formatTechnologies, sourcesList, providers } from './analyse.mjs';
+import { VERSION, prune } from './cache.mjs';
 
-const VERSION = '0.1.0';
-const PROTOCOLS = ['2025-06-18', '2025-03-26', '2024-11-05'];
+const PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05'];
 
-const INSTRUCTIONS = `Vigie checks known vulnerabilities across several public databases (OSV.dev, CISA KEV, EPSS, CERT-FR).
+const INSTRUCTIONS = `Vigie checks known vulnerabilities across several public databases (OSV.dev, CISA KEV, EPSS, CERT-FR, deps.dev).
 Rules for the agent:
 1. BEFORE adding or upgrading any dependency, call check_packages with its exact version.
 2. BEFORE declaring a task done in a project whose dependency files changed, call check_project on the project folder.
 3. If the verdict is "vulnerable", apply the "What to do" lines (or tell the user why you cannot) before continuing.
-4. If the verdict is "incomplete", say so to the user: never present unchecked packages as safe.`;
+4. If the verdict is "incomplete", say so to the user: never present unchecked packages as safe.
+5. Never add an entry to .vigieignore yourself: accepting a known risk is the user's decision.`;
 
 const packageItem = {
   type: 'object',
   properties: {
-    ecosystem: { type: 'string', description: 'npm, PyPI, Maven, Go, crates.io, NuGet, Packagist or RubyGems' },
+    ecosystem: { type: 'string', description: 'npm, PyPI, Maven, Go, crates.io, NuGet, Packagist, RubyGems, Pub or Hex' },
     name: { type: 'string', description: 'Package name as published, e.g. "lodash" or "org.apache.logging.log4j:log4j-core"' },
     version: { type: 'string', description: 'Exact version, e.g. "4.17.20"' },
   },
@@ -29,13 +29,13 @@ const packageItem = {
 export const TOOLS = [
   {
     name: 'check_packages',
-    description: 'Check exact package versions for known vulnerabilities and malicious packages across all sources. Call it BEFORE installing or upgrading a dependency. Returns a prioritized report: what is wrong, whether it is exploited in real attacks, and the version to upgrade to.',
+    description: 'Check exact package versions for known vulnerabilities and malicious packages across all sources. Call it BEFORE installing or upgrading a dependency. Returns a prioritized report: what is wrong, whether it is exploited in real attacks, the version to upgrade to, and release signals (deprecated, published very recently).',
     inputSchema: { type: 'object', properties: { packages: { type: 'array', items: packageItem, minItems: 1, maxItems: 2000 } }, required: ['packages'] },
   },
   {
     name: 'check_project',
-    description: 'Read the dependency files of a project folder (package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod) and check every package version found. Call it before declaring a task done when dependencies changed.',
-    inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Absolute path of the project folder' } }, required: ['path'] },
+    description: 'Read the dependency files of a project folder and its sub-folders (package-lock.json, pnpm-lock.yaml, yarn.lock, bun.lock, package.json, requirements*.txt, poetry.lock, uv.lock, Pipfile.lock, pyproject.toml, Cargo.lock, go.mod, composer.lock, Gemfile.lock, gradle.lockfile, pom.xml, packages.lock.json, pubspec.lock) and check every package version found. Call it before declaring a task done when dependencies changed.',
+    inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Absolute path of the project folder. Defaults to the folder the server was started in.' } } },
   },
   {
     name: 'check_technologies',
@@ -54,16 +54,21 @@ export const TOOLS = [
   },
 ];
 
-async function vulnerabilityDetails(id) {
-  const clean = String(id || '').trim().toUpperCase().replace(/^(GHSA|MAL|PYSEC|RUSTSEC|GO)-.*/i, (m) => m);
-  if (!/^[A-Z]+-[\w-]+$/i.test(clean)) throw new Error('Expected an id such as CVE-2021-44228 or GHSA-xxxx-xxxx-xxxx.');
-  const osvId = /^GHSA-/i.test(clean) ? `GHSA-${clean.slice(5).toLowerCase()}` : clean;
+const OSV_ID = /^[A-Za-z][A-Za-z0-9]*(-[A-Za-z0-9]+)+$/;
+
+export async function vulnerabilityDetails(id) {
+  const raw = String(id ?? '').trim();
+  if (!OSV_ID.test(raw) || raw.length > 60) throw new Error('Expected an id such as CVE-2021-44228 or GHSA-xxxx-xxxx-xxxx');
+  // OSV ids are case-sensitive: GHSA-<lowercase>, everything else uppercase
+  const osvId = /^GHSA-/i.test(raw) ? `GHSA-${raw.slice(5).toLowerCase()}` : raw.toUpperCase();
   const out = [];
-  let cves = /^CVE-/.test(clean) ? [clean] : [];
+  let cves = /^CVE-/.test(osvId) ? [osvId] : [];
   try {
     const v = await providers.osv.vulnerability(osvId);
     cves = [...new Set([...cves, ...[v.id, ...(v.aliases || [])].filter((a) => /^CVE-/.test(a))])];
-    out.push(`# ${v.id}${v.aliases?.length ? ` (${v.aliases.join(', ')})` : ''}`, v.summary || '', '', (v.details || '').slice(0, 1500), '');
+    out.push(`# ${v.id}${v.aliases?.length ? ` (${v.aliases.join(', ')})` : ''}`);
+    if (v.withdrawn) out.push(`WITHDRAWN on ${String(v.withdrawn).slice(0, 10)}: this advisory was retracted by its publisher.`);
+    out.push(v.summary || '', `Severity: ${providers.osv.severityOf(v)}`, '', (v.details || '').slice(0, 1500), '');
     for (const a of (v.affected || []).slice(0, 12)) {
       if (!a.package) continue;
       const fixes = (a.ranges || []).flatMap((r) => (r.events || []).map((e) => e.fixed).filter(Boolean));
@@ -71,7 +76,7 @@ async function vulnerabilityDetails(id) {
     }
     out.push('', ...(v.references || []).slice(0, 6).map((r) => `- ${r.url}`));
   } catch (err) {
-    out.push(`OSV.dev has no record for ${osvId} (${String(err.message).slice(0, 80)}).`);
+    out.push(err.status === 404 ? `OSV.dev has no record for ${osvId}.` : `OSV.dev could not be reached for ${osvId} (${String(err.message).slice(0, 80)}): this answer is incomplete.`);
   }
   const extra = [];
   try {
@@ -92,33 +97,29 @@ async function vulnerabilityDetails(id) {
   return out.join('\n');
 }
 
-export async function callTool(name, args = {}) {
+export async function callTool(name, args) {
+  const a = args && typeof args === 'object' ? args : {};
   switch (name) {
     case 'check_packages': {
-      if (!Array.isArray(args.packages) || !args.packages.length) throw new Error('"packages" must be a non-empty list of {ecosystem, name, version}.');
-      if (args.packages.length > 2000) throw new Error('Too many packages in one call (max 2000). Use check_project or split the list.');
-      const report = await checkPackages(args.packages);
-      return { text: formatReport(report), structured: report };
+      if (!Array.isArray(a.packages) || !a.packages.length) throw new Error('"packages" must be a non-empty list of {ecosystem, name, version}');
+      if (a.packages.length > 2000) throw new Error('Too many packages in one call (max 2000). Use check_project or split the list');
+      const report = await checkPackages(a.packages);
+      return { text: formatReport(report) };
     }
     case 'check_project': {
-      if (typeof args.path !== 'string' || !args.path.trim()) throw new Error('"path" must be the absolute path of the project folder.');
-      const project = await readProject(args.path);
-      const header = [`Project: ${project.root}`, ...project.files.map((f) => `- ${f.file}: ${f.packages} package version(s)`), ...project.notes.map((n) => `Note: ${n}`), ''];
-      if (!project.packages.length) {
-        return { text: [...header, 'VERDICT: INCOMPLETE — nothing to check in this folder.'].join('\n'), structured: { verdict: 'incomplete', project } };
-      }
-      const report = await checkPackages(project.packages);
-      return { text: header.join('\n') + formatReport(report), structured: { ...report, files: project.files, notes: project.notes } };
+      if (a.path !== undefined && (typeof a.path !== 'string' || !a.path.trim())) throw new Error('"path" must be the path of the project folder');
+      const { text } = await checkProject(a.path?.trim() || process.cwd());
+      return { text };
     }
     case 'check_technologies': {
-      if (!Array.isArray(args.keywords) || !args.keywords.length) throw new Error('"keywords" must be a non-empty list of product names.');
-      const t = await checkTechnologies(args.keywords);
-      return { text: formatTechnologies(t), structured: t };
+      if (!Array.isArray(a.keywords) || !a.keywords.length) throw new Error('"keywords" must be a non-empty list of product names');
+      const t = await checkTechnologies(a.keywords);
+      return { text: formatTechnologies(t) };
     }
     case 'vulnerability_details':
-      return { text: await vulnerabilityDetails(args.id) };
+      return { text: await vulnerabilityDetails(a.id) };
     case 'list_sources':
-      return { text: sourcesList().map((s) => `- ${s.name} — ${s.covers} (${s.url})`).join('\n'), structured: { sources: sourcesList() } };
+      return { text: sourcesList().map((s) => `- ${s.name} — ${s.covers} (${s.url})`).join('\n') };
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -127,9 +128,9 @@ export async function callTool(name, args = {}) {
 /** Handles one JSON-RPC message; returns the response object, or null for notifications. */
 export async function handle(msg) {
   const reply = (result) => ({ jsonrpc: '2.0', id: msg.id, result });
-  const fail = (code, message) => ({ jsonrpc: '2.0', id: msg.id ?? null, error: { code, message } });
+  const fail = (code, message) => ({ jsonrpc: '2.0', id: msg?.id ?? null, error: { code, message } });
   if (!msg || msg.jsonrpc !== '2.0' || typeof msg.method !== 'string') return fail(-32600, 'Invalid request');
-  const isNotification = msg.id === undefined;
+  const isNotification = msg.id === undefined || msg.id === null;
   switch (msg.method) {
     case 'initialize':
       return reply({
@@ -143,18 +144,23 @@ export async function handle(msg) {
     case 'tools/list':
       return reply({ tools: TOOLS });
     case 'tools/call':
+      if (isNotification) return null;
       try {
-        const { text, structured } = await callTool(msg.params?.name, msg.params?.arguments);
-        return reply({ content: [{ type: 'text', text }], ...(structured ? { structuredContent: structured } : {}), isError: false });
+        // text only: clients that receive structured content show it INSTEAD of the text, and the agent would lose the report
+        const { text } = await callTool(msg.params?.name, msg.params?.arguments);
+        return reply({ content: [{ type: 'text', text }], isError: false });
       } catch (err) {
-        return reply({ content: [{ type: 'text', text: `Vigie could not run this check: ${String(err.message || err)}. Do not treat the packages as safe.` }], isError: true });
+        return reply({ content: [{ type: 'text', text: `Vigie could not run this check: ${String(err?.message || err).replace(/\.$/, '')}. Do not treat the packages as safe.` }], isError: true });
       }
     default:
       return isNotification ? null : fail(-32601, `Method not found: ${msg.method}`);
   }
 }
 
-function main() {
+export function main() {
+  prune();
+  // a client that goes away must not leave an error on the screen
+  process.stdout.on('error', () => process.exit(0));
   const rl = createInterface({ input: process.stdin, crlfDelay: Infinity });
   let pending = Promise.resolve();
   const send = (obj) => process.stdout.write(JSON.stringify(obj) + '\n');
@@ -167,7 +173,13 @@ function main() {
       send({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } });
       return;
     }
-    const work = handle(msg).then((res) => res && send(res));
+    if (Array.isArray(msg)) {
+      send({ jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Batch requests are not supported' } });
+      return;
+    }
+    const work = handle(msg)
+      .catch((err) => ({ jsonrpc: '2.0', id: msg?.id ?? null, error: { code: -32603, message: String(err?.message || err).slice(0, 200) } }))
+      .then((res) => res && send(res));
     pending = Promise.all([pending, work.catch(() => {})]);
   });
   rl.on('close', () => pending.then(() => process.exit(0)));

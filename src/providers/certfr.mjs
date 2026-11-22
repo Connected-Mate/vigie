@@ -18,7 +18,13 @@ const decode = (s) =>
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
+    .replace(/&#39;/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)));
+
+const isoDay = (s) => {
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
+};
 
 export function parseFeed(xml) {
   const items = [];
@@ -27,7 +33,7 @@ export function parseFeed(xml) {
     const link = pick('link');
     const ref = (link.match(/CERTFR-\d{4}-[A-Z]{3}-\d+/) || [])[0];
     if (!ref) continue;
-    items.push({ ref, title: pick('title'), link, date: new Date(pick('pubDate')).toISOString().slice(0, 10) });
+    items.push({ ref, title: pick('title'), link, date: isoDay(pick('pubDate')) });
   }
   return items;
 }
@@ -35,9 +41,9 @@ export function parseFeed(xml) {
 async function bulletin(item) {
   try {
     const { value } = await cached(`certfr:${item.ref}`, 24 * HOUR, async () => {
-      const j = await http(`${item.link.replace(/\/?$/, '/')}json/`);
+      const j = await http(`${BASE}/${item.kind}/${item.ref}/json/`, { timeoutMs: 15000 });
       return {
-        cves: (j.cves || []).map((c) => c.name),
+        cves: (j.cves || []).map((c) => c?.name).filter(Boolean),
         products: [
           ...new Set(
             (j.affected_systems || []).map((a) =>
@@ -62,8 +68,10 @@ export async function index() {
         parseFeed(await http(`${BASE}/${kind}/feed/`, { text: true })).map((i) => ({ ...i, kind })),
       ),
     );
-    const bulletins = await pool(feeds.flat(), 8, bulletin);
+    const bulletins = await pool(feeds.flat(), 10, bulletin);
     if (!bulletins.length) throw new Error('CERT-FR feed is empty');
+    // each bulletin is cached on its own, so a later call resumes where this one stopped
+    if (bulletins.filter((b) => b.incomplete).length > bulletins.length / 4) throw new Error('CERT-FR bulletins could not be loaded');
     return bulletins;
   });
   const byCve = new Map();
@@ -73,7 +81,7 @@ export async function index() {
 
 /** Bulletins whose title or affected products contain every word of the keyword. Open alerts first. */
 export function search(idx, keyword, limit = 10) {
-  const words = keyword.toLowerCase().split(/\s+/).filter((w) => /[a-zà-ÿ]/.test(w));
+  const words = keyword.toLowerCase().split(/\s+/).filter((w) => /[a-zà-ÿ0-9]/.test(w));
   if (!words.length) return [];
   return idx.bulletins
     .filter((b) => {

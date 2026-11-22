@@ -13,13 +13,14 @@ const FEED = 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vul
 export async function catalogue() {
   const { value, stale } = await cached('kev', 6 * HOUR, async () => {
     const j = await http(FEED, { timeoutMs: 30000 });
+    if (!Array.isArray(j.vulnerabilities) || !j.vulnerabilities.length) throw new Error('CISA KEV catalogue is empty');
     return {
       version: j.catalogVersion,
-      entries: j.vulnerabilities.map((v) => ({
+      entries: (Array.isArray(j.vulnerabilities) ? j.vulnerabilities : []).filter((v) => v?.cveID).map((v) => ({
         cve: v.cveID,
-        vendor: v.vendorProject,
-        product: v.product,
-        name: v.vulnerabilityName,
+        vendor: String(v.vendorProject || ''),
+        product: String(v.product || ''),
+        name: String(v.vulnerabilityName || ''),
         added: v.dateAdded,
         ransomware: v.knownRansomwareCampaignUse === 'Known',
         action: String(v.requiredAction || '').slice(0, 220),
@@ -31,7 +32,7 @@ export async function catalogue() {
 
 /** Entries whose vendor or product contains every word of the keyword. */
 export function search(cat, keyword, limit = 10) {
-  const words = keyword.toLowerCase().split(/\s+/).filter((w) => /[a-z]/.test(w));
+  const words = keyword.toLowerCase().split(/\s+/).filter((w) => /[a-z0-9]/.test(w));
   if (!words.length) return [];
   return cat.entries
     .filter((e) => {

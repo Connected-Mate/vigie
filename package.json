@@ -1,19 +1,24 @@
 {
   "name": "vigie-mcp",
-  "version": "0.1.0",
-  "description": "MCP server that makes coding agents check known vulnerabilities across several public databases (OSV, CISA KEV, EPSS, CERT-FR). No account, no API key, no dependency.",
+  "version": "1.0.0",
+  "description": "Makes coding agents check known vulnerabilities before they install anything: MCP server, agent hook and CLI that cross-check OSV, CISA KEV, EPSS, CERT-FR and deps.dev. No account, no API key, no dependency.",
   "type": "module",
   "license": "MIT",
+  "author": "Connected Mate",
+  "homepage": "https://github.com/Connected-Mate/vigie#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/Connected-Mate/vigie.git" },
+  "bugs": { "url": "https://github.com/Connected-Mate/vigie/issues" },
   "bin": {
+    "vigie": "bin/vigie.mjs",
     "vigie-mcp": "src/server.mjs",
     "vigie-hook": "bin/vigie-hook.mjs"
   },
-  "engines": {
-    "node": ">=18"
-  },
+  "files": ["bin/", "src/", "README.md", "AGENT-SETUP.md", "CHANGELOG.md", "SECURITY.md", "LICENSE"],
+  "engines": { "node": ">=18" },
   "scripts": {
     "test": "node --test",
-    "start": "node src/server.mjs"
+    "start": "node src/server.mjs",
+    "check": "node bin/vigie.mjs check ."
   },
-  "keywords": ["mcp", "security", "vulnerabilities", "osv", "cert-fr", "kev", "epss", "coding-agents"]
+  "keywords": ["mcp", "mcp-server", "security", "vulnerabilities", "supply-chain", "osv", "cert-fr", "kev", "epss", "coding-agents", "claude-code", "hook", "cli"]
 }

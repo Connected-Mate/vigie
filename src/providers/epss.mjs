@@ -11,9 +11,10 @@ export const meta = {
 /** Map cve -> probability (number between 0 and 1). */
 export async function scores(cves) {
   const out = new Map();
-  for (let i = 0; i < cves.length; i += 80) {
-    const j = await http(`https://api.first.org/data/v1/epss?cve=${cves.slice(i, i + 80).join(',')}`);
-    for (const d of j.data || []) out.set(d.cve, Number(d.epss));
+  const ids = cves.filter((c) => /^CVE-\d{4}-\d+$/.test(c));
+  for (let i = 0; i < ids.length; i += 80) {
+    const j = await http(`https://api.first.org/data/v1/epss?cve=${ids.slice(i, i + 80).join(',')}`, { timeoutMs: 15000 });
+    for (const d of j.data || []) if (d?.cve && Number.isFinite(Number(d.epss))) out.set(d.cve, Number(d.epss));
   }
   return out;
 }
