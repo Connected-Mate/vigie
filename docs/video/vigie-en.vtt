@@ -28,14 +28,14 @@ Install blocked, before it lands.
 6
 00:00:27.900 --> 00:00:34.200
 The report tells your agent what to do.
-[The line "What to do: Upgrade lodash to 4.18.0 or later" is highlighted; the four sources answer ok.]
+[The line "What to do: Upgrade lodash to 4.18.1" is highlighted; the five sources answer ok.]
 
 7
 00:00:34.800 --> 00:00:39.600
 The agent fixes it. The forest stays safe.
-[The lodash 4.18.0 tree is planted; day breaks, the tower keeps watching.]
+[The lodash 4.18.1 tree is planted; day breaks, the tower keeps watching.]
 
 8
 00:00:40.200 --> 00:00:47.000
 Vigie. Your agent checks known vulnerabilities, every time. Free, Open source (MIT), No account.
-[The forest in the morning, the name Vigie. OSV.dev · CISA KEV · EPSS · CERT-FR. Publicly known vulnerabilities in published packages only.]
+[The forest in the morning, the name Vigie. OSV.dev · CISA KEV · EPSS · CERT-FR · deps.dev. Publicly known vulnerabilities in published packages only.]

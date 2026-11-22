@@ -12,23 +12,24 @@ Transcript: the on-screen text, and in brackets what the picture shows.
 0:21  Install blocked, before it lands.
       [The real Vigie report appears: install of lodash 4.17.20 blocked, 4 known vulnerabilities.]
 0:27  The report tells your agent what to do.
-      [The line "What to do: Upgrade lodash to 4.18.0 or later" is highlighted; the four sources answer ok.]
+      [The line "What to do: Upgrade lodash to 4.18.1" is highlighted; the five sources answer ok.]
 0:34  The agent fixes it. The forest stays safe.
-      [The lodash 4.18.0 tree is planted; day breaks, the tower keeps watching.]
+      [The lodash 4.18.1 tree is planted; day breaks, the tower keeps watching.]
 0:40  Vigie. Your agent checks known vulnerabilities, every time. Free, Open source (MIT), No account.
-      [The forest in the morning, the name Vigie. OSV.dev · CISA KEV · EPSS · CERT-FR. Publicly known vulnerabilities in published packages only.]
+      [The forest in the morning, the name Vigie. OSV.dev · CISA KEV · EPSS · CERT-FR · deps.dev. Publicly known vulnerabilities in published packages only.]
 
 Report text shown from 0:21 to 0:34 (real Vigie output; "…" = lines not shown):
 $ npm install lodash@4.17.20
-Vigie blocked this install: 1 package(s) with a high-priority known vulnerability.
-VERDICT: 4 known vulnerabilities in 1 of 1 package version(s).
+Vigie blocked this command: 1 package(s) it would install have a high-priority known vulnerability.
+VERDICT: 4 known vulnerabilities in 1 of 1 package version(s) — 1 high priority.
 ## [HIGH] lodash@4.17.20 (npm)
-What to do: Upgrade lodash to 4.18.0 or later (fixes 4 of 4).
+What to do: Upgrade lodash to 4.18.1, the current release (fixes 4 of 4; the first fixed version 4.18.0 still has other known vulnerabilities).
 - GHSA-35jh-r3h4-6jhm (CVE-2021-23337) · severity HIGH · fixed in 4.17.21 · exploit probability 20%
   Command Injection in lodash
 …
 Sources:
 - OSV.dev (Google / OpenSSF): ok
 - CISA Known Exploited Vulnerabilities: ok
-- EPSS (FIRST.org): ok
+- deps.dev (Google Open Source Insights): ok
 - CERT-FR (ANSSI, French government): ok
+- EPSS (FIRST.org): ok

@@ -50,7 +50,7 @@ async function film(lang, format) {
   const name = `vigie-${lang}${format === '9x16' ? '-9x16' : ''}`
   const mp4 = path.join(DEST, name + '.mp4')
   const ff = spawn(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-',
-    '-vf', 'scale=in_range=full:out_range=tv:out_color_matrix=bt709,format=yuv420p', '-c:v', 'libx264', '-preset', 'slow', '-crf', '21',
+    '-vf', 'scale=in_range=full:out_range=tv:out_color_matrix=bt709,format=yuv420p', '-c:v', 'libx264', '-preset', 'slow', '-crf', '24',
     '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv', '-movflags', '+faststart', '-an', mp4], { stdio: ['pipe', 'inherit', 'inherit'] })
   const closed = new Promise((r) => ff.on('close', r))
   const n = Math.round(COPY.duration * FPS)
