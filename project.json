@@ -1,0 +1,1254 @@
+{
+  "slug": "vigie",
+  "name": "Vigie",
+  "default_lang": "fr",
+  "level": 2,
+  "theme": {
+    "accent": "#b4441c",
+    "accent_ink": "#fffaf2",
+    "bg": "#f7f2e8",
+    "ink": "#1c2b25",
+    "bg_dark": "#0f1a17",
+    "ink_dark": "#ecefe5",
+    "accent_dark": "#f08a4b",
+    "accent_ink_dark": "#1b1109"
+  },
+  "tagline": {
+    "fr": "ton agent de code vérifie les failles connues, à chaque fois",
+    "en": "your coding agent checks known vulnerabilities, every time"
+  },
+  "headline": {
+    "fr": "Repère la fumée avant l'incendie.",
+    "en": "Spot the smoke before the fire."
+  },
+  "lede": {
+    "fr": "Ton code est une forêt : chaque brique que tu installes est un arbre. Vigie oblige ton agent de code à vérifier les failles connues de ces briques, à chaque fois, dans quatre bases publiques, et lui dit quoi corriger et vers quelle version passer.",
+    "en": "Your codebase is a forest, and every package you install is a tree. Vigie makes your coding agent check those packages for known vulnerabilities, every time, across four public databases, then tells it what to fix and which version to move to."
+  },
+  "description": {
+    "fr": "Vigie fait vérifier à ton agent de code les failles connues de tes dépendances dans OSV.dev, CISA KEV, EPSS et CERT-FR. Gratuit, open source, sans compte.",
+    "en": "Vigie makes your coding agent check your dependencies for known vulnerabilities in OSV.dev, CISA KEV, EPSS and CERT-FR. Free, open source, no account."
+  },
+  "badge": {
+    "fr": "Gratuit · open source · sans compte",
+    "en": "Free · open source · no account"
+  },
+  "platform": {
+    "fr": "Node.js 18 ou plus récent · tout agent compatible MCP · licence MIT",
+    "en": "Node.js 18 or later · any MCP-compatible agent · MIT license"
+  },
+  "app_category": "DeveloperApplication",
+  "source": "open",
+  "license": "MIT",
+  "source_repo": "https://github.com/Connected-Mate/vigie",
+  "price": {
+    "model": "free"
+  },
+  "coffee": {
+    "enabled": true,
+    "url": "https://revolut.me/alexcormeraie"
+  },
+  "download": {
+    "type": "none",
+    "repo": "Connected-Mate/vigie"
+  },
+  "install_command": null,
+  "hero_image": {
+    "src": "assets/hero.png",
+    "width": 1600,
+    "height": 900,
+    "alt": {
+      "fr": "Illustration : une tour de guet en bois domine une forêt à l'aube ; au loin, une fine colonne de fumée s'élève entre les arbres.",
+      "en": "Illustration: a wooden lookout tower stands over a forest at dawn; in the distance, a thin column of smoke rises between the trees."
+    }
+  },
+  "og_image": {
+    "fr": "assets/og.jpg",
+    "en": "assets/og-en.jpg",
+    "alt": {
+      "fr": "Vigie : une tour de guet au-dessus d'une forêt, avec le texte « Repère la fumée avant l'incendie ».",
+      "en": "Vigie: a lookout tower above a forest, with the text “Spot the smoke before the fire”."
+    }
+  },
+  "icon": "assets/icon-512.png",
+  "features": [
+    {
+      "title": {
+        "fr": "Elle barre la route à l'arbre qui brûle",
+        "en": "It stops the burning tree at the gate"
+      },
+      "text": {
+        "fr": "Avant un npm install, pnpm add, yarn add, pip install, uv add ou poetry add, le crochet vérifie les briques. Si l'une a une faille connue de priorité haute ou est malveillante, l'installation est bloquée et l'agent reçoit le rapport et la correction.",
+        "en": "Before an npm install, pnpm add, yarn add, pip install, uv add or poetry add, the hook checks the packages. If one has a high-priority known vulnerability or is malicious, the install is blocked and the agent gets the report and the fix."
+      }
+    },
+    {
+      "title": {
+        "fr": "Elle balaie toute la forêt",
+        "en": "It scans the whole forest"
+      },
+      "text": {
+        "fr": "Donne-lui le dossier d'un projet : Vigie lit ses fichiers de dépendances (package-lock.json, pnpm-lock.yaml, yarn.lock, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod…) et vérifie chaque version trouvée.",
+        "en": "Give it a project folder: Vigie reads its dependency files (package-lock.json, pnpm-lock.yaml, yarn.lock, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod…) and checks every version it finds."
+      }
+    },
+    {
+      "title": {
+        "fr": "Elle donne l'endroit exact et le chemin",
+        "en": "It gives the exact spot and the way out"
+      },
+      "text": {
+        "fr": "Le contrôle porte sur ta version exacte, pas sur le nom de la brique. Pour chaque brique touchée, une ligne « What to do » indique la version vers laquelle passer.",
+        "en": "The check is on your exact version, not just the package name. For each affected package, a “What to do” line names the version to move to."
+      }
+    },
+    {
+      "title": {
+        "fr": "Elle ne dit jamais « rien à signaler » dans le brouillard",
+        "en": "It never calls “all clear” in the fog"
+      },
+      "text": {
+        "fr": "Une base qui ne répond pas est nommée dans le rapport. Si la vérification n'a pas pu se faire, le verdict est « incomplete », et l'agent doit te le dire.",
+        "en": "A database that does not answer is named in the report. If the check could not be done, the verdict is “incomplete”, and the agent has to tell you."
+      }
+    },
+    {
+      "title": {
+        "fr": "Elle surveille aussi au-delà des arbres",
+        "en": "It watches beyond the trees too"
+      },
+      "text": {
+        "fr": "PostgreSQL, nginx, Windows Server : pour ce qui n'est pas une brique, une veille par mot-clé remonte les bulletins récents du CERT-FR et les failles exploitées dans de vraies attaques.",
+        "en": "PostgreSQL, nginx, Windows Server: for what is not a package, a keyword watch brings up recent CERT-FR bulletins and vulnerabilities exploited in real attacks."
+      }
+    },
+    {
+      "title": {
+        "fr": "Une tour simple, que tu peux visiter",
+        "en": "A simple tower you can walk through"
+      },
+      "text": {
+        "fr": "Du Node.js tout simple, aucune dépendance, rien à installer avec npm. Pas de compte, pas de clé. Assez court pour être lu avant de lui faire confiance.",
+        "en": "Plain Node.js, no dependency, nothing to npm install. No account, no key. Short enough to read before you trust it."
+      }
+    }
+  ],
+  "steps": [
+    {
+      "fr": "Brancher le serveur MCP",
+      "en": "Connect the MCP server"
+    },
+    {
+      "fr": "Poser le crochet",
+      "en": "Set the hook"
+    },
+    {
+      "fr": "Ajouter la règle",
+      "en": "Add the rule"
+    }
+  ],
+  "faq": [
+    {
+      "q": {
+        "fr": "Est-ce vraiment gratuit ?",
+        "en": "Is it really free?"
+      },
+      "a": {
+        "fr": "Oui. Vigie est gratuit, open source (licence MIT), sans compte et sans clé. Les quatre bases interrogées sont publiques et gratuites elles aussi.",
+        "en": "Yes. Vigie is free, open source (MIT license), with no account and no key. The four databases it asks are public and free as well."
+      }
+    },
+    {
+      "q": {
+        "fr": "Qu'est-ce que Vigie vérifie exactement ?",
+        "en": "What exactly does Vigie check?"
+      },
+      "a": {
+        "fr": "Les failles connues et les paquets malveillants des briques que ton projet utilise, sur leur version exacte. Pour chaque faille : si elle est exploitée dans de vraies attaques, la probabilité qu'elle le soit bientôt, s'il existe un bulletin du CERT-FR, et la version vers laquelle passer.",
+        "en": "Known vulnerabilities and malicious packages in the packages your project uses, on their exact version. For each one: whether it is exploited in real attacks, how likely it is to be soon, whether a CERT-FR bulletin exists, and which version to move to."
+      }
+    },
+    {
+      "q": {
+        "fr": "Qu'est-ce que Vigie ne voit pas ?",
+        "en": "What does Vigie not see?"
+      },
+      "a": {
+        "fr": "Tout ce qui n'est pas une faille publique dans une brique publiée : les erreurs de ton propre code, les mauvais réglages, les failles pas encore signalées. Avec un package.json seul, les dépendances indirectes ne sont pas vérifiées. Et le CERT-FR ne donne que ses derniers bulletins. Un rapport sans alerte ne veut pas dire que ton projet est sûr.",
+        "en": "Anything that is not a public vulnerability in a published package: flaws in your own code, misconfiguration, vulnerabilities not reported yet. With package.json alone, indirect dependencies are not checked. And CERT-FR only gives its latest bulletins. A report with no finding does not mean your project is safe."
+      }
+    },
+    {
+      "q": {
+        "fr": "Qu'est-ce qui sort de ma machine ?",
+        "en": "What leaves my machine?"
+      },
+      "a": {
+        "fr": "Les noms et les versions de tes briques, et les identifiants publics des failles trouvées, envoyés aux bases publiques interrogées. Jamais ton code. Tu peux le vérifier : le code de Vigie est court et lisible.",
+        "en": "The names and versions of your packages, and the public ids of the vulnerabilities found, sent to the public databases it asks. Never your code. You can verify it: Vigie's code is short and readable."
+      }
+    },
+    {
+      "q": {
+        "fr": "Avec quels agents ça marche ?",
+        "en": "Which agents does it work with?"
+      },
+      "a": {
+        "fr": "Le serveur fonctionne avec tout agent compatible MCP : Claude Code, Codex, Cursor et les autres. Le crochet qui bloque les installations est écrit au format des hooks de Claude Code. Avec un autre agent, tu gardes les outils de vérification et la règle dans ses consignes.",
+        "en": "The server works with any MCP-compatible agent: Claude Code, Codex, Cursor and others. The hook that blocks installs is written in the Claude Code hook format. With another agent, you still get the checking tools and the rule in its instructions."
+      }
+    },
+    {
+      "q": {
+        "fr": "Quels langages sont couverts ?",
+        "en": "Which languages are covered?"
+      },
+      "a": {
+        "fr": "Brique par brique : npm, PyPI, Maven, Go, crates.io, NuGet, Packagist et RubyGems. Pour un dossier de projet, Vigie lit package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock et go.mod. Le crochet reconnaît les installations faites avec npm, pnpm, bun, yarn, pip, uv et poetry.",
+        "en": "Package by package: npm, PyPI, Maven, Go, crates.io, NuGet, Packagist and RubyGems. For a project folder, Vigie reads package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock and go.mod. The hook recognises installs made with npm, pnpm, bun, yarn, pip, uv and poetry."
+      }
+    },
+    {
+      "q": {
+        "fr": "Et si une base ne répond pas ?",
+        "en": "What if a database is down?"
+      },
+      "a": {
+        "fr": "Elle est nommée dans le rapport. Si une copie plus ancienne existe sur ta machine, Vigie s'en sert et le précise. Si OSV.dev ne répond pas, le verdict est « incomplete » : jamais « rien à signaler ». Le crochet, lui, laisse alors passer la commande, sauf avec VIGIE_STRICT=1.",
+        "en": "It is named in the report. If an older copy exists on your machine, Vigie uses it and says so. If OSV.dev does not answer, the verdict is “incomplete”, never “all clear”. The hook then lets the command through, unless VIGIE_STRICT=1 is set."
+      }
+    },
+    {
+      "q": {
+        "fr": "Est-ce que ça ralentit mon agent ?",
+        "en": "Does it slow my agent down?"
+      },
+      "a": {
+        "fr": "Le premier appel de la journée télécharge les catalogues, ce qui prend environ 30 secondes. Ensuite, les résultats sont gardés dans ~/.cache/vigie.",
+        "en": "The first call of the day downloads the catalogues, which takes about 30 seconds. After that, results are cached in ~/.cache/vigie."
+      }
+    },
+    {
+      "q": {
+        "fr": "Comment l'enlever ?",
+        "en": "How do I remove it?"
+      },
+      "a": {
+        "fr": "Défais les trois gestes de l'installation : retire le serveur MCP de ton agent, enlève le crochet de ses réglages, supprime la règle de ses consignes. Tu peux ensuite effacer le dossier de Vigie et ~/.cache/vigie. Ton agent peut le faire pour toi.",
+        "en": "Undo the three install steps: remove the MCP server from your agent, take the hook out of its settings, delete the rule from its instructions. You can then delete the Vigie folder and ~/.cache/vigie. Your agent can do it for you."
+      }
+    },
+    {
+      "q": {
+        "fr": "Pourquoi « Vigie » ?",
+        "en": "Why “Vigie”?"
+      },
+      "a": {
+        "fr": "Une vigie, c'est le poste de guet, et celui qui s'y tient. Comme le guetteur d'incendie en haut de sa tour, l'outil ne combat pas le feu : il le repère tôt et dit à l'équipe, ton agent, où aller et quoi faire.",
+        "en": "“Vigie” is French for a lookout: the watch post, and the person keeping it. Like a fire lookout in a tower, the tool does not fight the fire: it spots it early and tells the crew, your agent, where to go and what to do."
+      }
+    }
+  ],
+  "video_pending": true,
+  "agent_setup": {
+    "setup_url": "https://github.com/Connected-Mate/vigie/blob/main/AGENT-SETUP.md",
+    "prompt": {
+      "fr": "Installe Vigie pour moi. Vigie est un serveur MCP et un crochet open source qui vérifient les failles connues de mes dépendances.\n1. Pars du dossier où tu es. Cherche d'abord un projet avec des fichiers de dépendances : package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod.\n2. Suis exactement https://github.com/Connected-Mate/vigie/blob/main/AGENT-SETUP.md : clone le dépôt, branche le serveur MCP, pose le crochet, ajoute la règle à mes consignes.\n3. Prouve que ça marche : lance une vraie vérification Vigie sur ce projet et montre-moi le rapport, avec ce qu'il faut corriger en premier.\nAucun projet trouvé ? Dis-le-moi et propose une première vérification sur une brique que je te nomme.\nDemande-moi avant toute action sensible : mot de passe, droits admin, suppression. Si une étape échoue, dis-moi laquelle et pourquoi.",
+      "en": "Set up Vigie for me. Vigie is a free, open-source MCP server and hook that check my dependencies for known vulnerabilities.\n1. Start from the folder you are in. Look first for a project with dependency files: package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod.\n2. Follow https://github.com/Connected-Mate/vigie/blob/main/AGENT-SETUP.md exactly: clone the repository, connect the MCP server, set the hook, add the rule to my agent instructions.\n3. Prove it works: run a real Vigie check on that project and show me the report, with what to fix first.\nIf you find no project, tell me, and offer a first check on a package I name.\nAsk me before any sensitive action: password, admin rights, deletion. If a step fails, tell me which one and why."
+    },
+    "agents": [
+      "claude-code",
+      "codex",
+      "cursor",
+      "gemini-cli",
+      "copilot",
+      "windsurf"
+    ]
+  },
+  "sea": {
+    "keywords": {
+      "fr": [
+        "serveur mcp sécurité",
+        "serveur mcp vulnérabilités",
+        "vérifier vulnérabilités dépendances",
+        "vérifier failles dépendances npm",
+        "scanner vulnérabilités dépendances open source",
+        "sécurité agent de code ia",
+        "sécuriser claude code dépendances",
+        "paquet npm malveillant détection",
+        "bloquer installation paquet vulnérable",
+        "sécurité chaîne d'approvisionnement logicielle",
+        "mcp osv",
+        "veille cert-fr vulnérabilités",
+        "alertes anssi cert-fr dépendances",
+        "failles exploitées cisa kev",
+        "score epss vulnérabilité"
+      ],
+      "en": [
+        "mcp security server",
+        "mcp vulnerability scanner",
+        "osv mcp server",
+        "dependency vulnerability check mcp",
+        "dependency vulnerability scanner for ai agents",
+        "ai coding agent security",
+        "secure ai coding agent dependencies",
+        "claude code security hook",
+        "block vulnerable package install",
+        "malicious package detection npm",
+        "slopsquatting protection",
+        "software supply chain security ai agents",
+        "open source dependency scanner free",
+        "cisa kev epss check",
+        "check cve before npm install"
+      ]
+    },
+    "negative_keywords": {
+      "fr": [
+        "emploi",
+        "recrutement",
+        "stage",
+        "formation",
+        "certification",
+        "salaire",
+        "minecraft",
+        "vigipirate",
+        "vigie météo",
+        "vigie maritime",
+        "sémaphore",
+        "antivirus",
+        "pentest",
+        "test d'intrusion",
+        "vpn",
+        "crack",
+        "piratage",
+        "exploit download"
+      ],
+      "en": [
+        "jobs",
+        "career",
+        "salary",
+        "course",
+        "certification",
+        "minecraft",
+        "microsoft certified professional",
+        "antivirus",
+        "pentest",
+        "penetration testing service",
+        "vpn",
+        "crack",
+        "hack tool",
+        "exploit download",
+        "bug bounty",
+        "network scanner",
+        "port scanner"
+      ]
+    },
+    "headlines": {
+      "fr": [
+        "Vigie : serveur MCP sécurité",
+        "Failles connues vérifiées",
+        "Bloque l'install dangereuse",
+        "Gratuit et open source (MIT)",
+        "Sans compte, sans clé API",
+        "Zéro dépendance, Node.js 18+",
+        "OSV, CISA KEV, EPSS, CERT-FR",
+        "4 bases publiques, 1 rapport",
+        "Ton agent vérifie avant npm i",
+        "Vérifie chaque dépendance",
+        "Paquets malveillants signalés",
+        "Alertes CERT-FR de l'ANSSI",
+        "Pour ton agent de code IA",
+        "Les failles exploitées d'abord"
+      ],
+      "en": [
+        "Vigie: MCP Security Server",
+        "Check Known Vulnerabilities",
+        "Block Dangerous Installs",
+        "Free and Open Source (MIT)",
+        "No Account, No API Key",
+        "Zero Dependencies, Node 18+",
+        "OSV, CISA KEV, EPSS, CERT-FR",
+        "4 Public Sources, 1 Report",
+        "Checked Before Install",
+        "Flags Malicious Packages",
+        "For AI Coding Agents",
+        "Dependency Checks via MCP",
+        "Exploited Flaws Come First",
+        "Tells Your Agent What to Fix"
+      ]
+    },
+    "descriptions": {
+      "fr": [
+        "Ton agent vérifie les failles connues de chaque dépendance dans 4 bases publiques.",
+        "Un crochet bloque l'installation d'un paquet dangereux. L'agent reçoit le correctif.",
+        "Gratuit, licence MIT, sans compte ni clé API. Node.js 18+ et aucune dépendance.",
+        "OSV.dev, CISA KEV, EPSS et CERT-FR réunis en un rapport : quoi, urgence, quoi faire."
+      ],
+      "en": [
+        "Your coding agent checks each dependency for known flaws across 4 public databases.",
+        "A hook blocks the install of a dangerous package and hands your agent the fix.",
+        "Free, MIT licensed, no account, no API key. Plain Node.js 18+, zero dependencies.",
+        "OSV.dev, CISA KEV, EPSS and CERT-FR in one report: what is wrong, how urgent, what to do."
+      ]
+    }
+  },
+  "legal_url": null,
+  "privacy_url": null,
+  "footer_note": {
+    "fr": "Vigie signale les failles publiques des briques publiées. Elle ne remplace ni une revue de sécurité, ni ta vigilance.",
+    "en": "Vigie reports public vulnerabilities in published packages. It does not replace a security review, or your own care."
+  },
+  "links": {
+    "x": "https://x.com/AlexCormeraie",
+    "email": null
+  },
+  "site_copy": {
+    "tagline": {
+      "fr": "le guetteur de failles pour ton agent de code",
+      "en": "the fire lookout for your coding agent"
+    },
+    "headline": {
+      "fr": "Repère la fumée avant l'incendie.",
+      "en": "Spot the smoke before the fire."
+    },
+    "lede": {
+      "fr": "Ton code est une forêt : chaque brique que tu installes est un arbre. Vigie oblige ton agent de code à vérifier les failles connues de ces briques, à chaque fois, dans quatre bases publiques, et lui dit quoi corriger et vers quelle version passer.",
+      "en": "Your codebase is a forest, and every package you install is a tree. Vigie makes your coding agent check those packages for known vulnerabilities, every time, across four public databases, then tells it what to fix and which version to move to."
+    },
+    "description": {
+      "fr": "Vigie fait vérifier à ton agent de code les failles connues de tes dépendances dans OSV.dev, CISA KEV, EPSS et CERT-FR. Gratuit, open source, sans compte.",
+      "en": "Vigie makes your coding agent check your dependencies for known vulnerabilities in OSV.dev, CISA KEV, EPSS and CERT-FR. Free, open source, no account."
+    },
+    "badge": {
+      "fr": "Gratuit · open source · sans compte",
+      "en": "Free · open source · no account"
+    },
+    "platform": {
+      "fr": "Node.js 18 ou plus récent · tout agent compatible MCP · licence MIT",
+      "en": "Node.js 18 or later · any MCP-compatible agent · MIT license"
+    },
+    "hero": {
+      "cta": {
+        "fr": "Copier le prompt d'installation",
+        "en": "Copy the setup prompt"
+      },
+      "cta_copied": {
+        "fr": "Prompt copié. Colle-le dans ton agent de code.",
+        "en": "Prompt copied. Paste it into your coding agent."
+      },
+      "secondary": {
+        "fr": "Voir comment ça marche",
+        "en": "See how it works"
+      },
+      "demo_title": {
+        "fr": "Un tour de guet, en vrai",
+        "en": "One watch, for real"
+      },
+      "demo_note": {
+        "fr": "Le rapport affiché est la vraie réponse de Vigie, relevée le 22 novembre 2026. Il est en anglais, car l'outil répond aux agents en anglais.",
+        "en": "The report shown is Vigie's real output, captured on 22 November 2026. It is in English because the tool answers agents in English."
+      },
+      "replay": {
+        "fr": "Rejouer",
+        "en": "Replay"
+      },
+      "tree_hint": {
+        "fr": "Choisis un arbre pour voir ce que la vigie en dit.",
+        "en": "Pick a tree to see what the lookout says about it."
+      },
+      "legend": {
+        "clear": {
+          "fr": "Rien à signaler",
+          "en": "All quiet"
+        },
+        "smoke": {
+          "fr": "Fumée",
+          "en": "Smoke"
+        },
+        "fire": {
+          "fr": "Incendie",
+          "en": "Fire"
+        }
+      },
+      "trees": {
+        "leftpad": {
+          "fr": "Arbre sain : aucune faille connue pour left-pad 1.3.0 dans les bases consultées.",
+          "en": "A healthy tree: no known vulnerability for left-pad 1.3.0 in the databases checked."
+        },
+        "express": {
+          "fr": "Un filet de fumée : express 4.17.1 a 2 failles connues, priorité moyenne. Passe à la version 4.20.0 ou plus récente.",
+          "en": "A wisp of smoke: express 4.17.1 has 2 known vulnerabilities, medium priority. Move to 4.20.0 or later."
+        },
+        "lodash": {
+          "fr": "Fumée épaisse : lodash 4.17.20 a 4 failles connues, priorité haute. Passe à la version 4.18.0 ou plus récente ; le crochet bloque son installation.",
+          "en": "Thick smoke: lodash 4.17.20 has 4 known vulnerabilities, high priority. Move to 4.18.0 or later; the hook blocks its install."
+        },
+        "log4j": {
+          "fr": "Ça brûle : log4j-core 2.14.1 a des failles exploitées dans de vraies attaques, dont des rançongiciels. À traiter tout de suite : passe à la version 2.25.4 ou plus récente.",
+          "en": "This one is burning: log4j-core 2.14.1 has vulnerabilities exploited in real attacks, ransomware included. Act now: move to 2.25.4 or later."
+        }
+      }
+    },
+    "agent": {
+      "title": {
+        "fr": "Installe Vigie avec ton agent de code",
+        "en": "Set Vigie up with your coding agent"
+      },
+      "text": {
+        "fr": "Pas besoin de savoir faire : ton agent s'en charge. Il branche Vigie, puis te montre un premier rapport sur ton projet.",
+        "en": "You don't need to know how: your agent does it. It connects Vigie, then shows you a first report on your project."
+      },
+      "steps": [
+        {
+          "fr": "Copie le prompt.",
+          "en": "Copy the prompt."
+        },
+        {
+          "fr": "Colle-le dans ton agent, depuis le dossier de ton projet.",
+          "en": "Paste it into your agent, from your project folder."
+        },
+        {
+          "fr": "Il installe Vigie, lance une vraie vérification et te montre le rapport.",
+          "en": "It sets Vigie up, runs a real check and shows you the report."
+        }
+      ],
+      "any": {
+        "fr": "ou n'importe quel agent compatible MCP",
+        "en": "or any MCP-compatible agent"
+      },
+      "copy": {
+        "fr": "Copier le prompt",
+        "en": "Copy the prompt"
+      },
+      "copied": {
+        "fr": "Copié. À coller dans ton agent.",
+        "en": "Copied. Paste it into your agent."
+      },
+      "prompt": {
+        "fr": "Installe Vigie pour moi. Vigie est un serveur MCP et un crochet open source qui vérifient les failles connues de mes dépendances.\n1. Pars du dossier où tu es. Cherche d'abord un projet avec des fichiers de dépendances : package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod.\n2. Suis exactement https://github.com/Connected-Mate/vigie/blob/main/AGENT-SETUP.md : clone le dépôt, branche le serveur MCP, pose le crochet, ajoute la règle à mes consignes.\n3. Prouve que ça marche : lance une vraie vérification Vigie sur ce projet et montre-moi le rapport, avec ce qu'il faut corriger en premier.\nAucun projet trouvé ? Dis-le-moi et propose une première vérification sur une brique que je te nomme.\nDemande-moi avant toute action sensible : mot de passe, droits admin, suppression. Si une étape échoue, dis-moi laquelle et pourquoi.",
+        "en": "Set up Vigie for me. Vigie is a free, open-source MCP server and hook that check my dependencies for known vulnerabilities.\n1. Start from the folder you are in. Look first for a project with dependency files: package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod.\n2. Follow https://github.com/Connected-Mate/vigie/blob/main/AGENT-SETUP.md exactly: clone the repository, connect the MCP server, set the hook, add the rule to my agent instructions.\n3. Prove it works: run a real Vigie check on that project and show me the report, with what to fix first.\nIf you find no project, tell me, and offer a first check on a package I name.\nAsk me before any sensitive action: password, admin rights, deletion. If a step fails, tell me which one and why."
+      }
+    },
+    "watch": {
+      "title": {
+        "fr": "Quatre postes d'observation, un seul rapport",
+        "en": "Four watch posts, one report"
+      },
+      "lede": {
+        "fr": "Une vigie seule ne voit qu'un versant. Vigie croise quatre bases publiques, sans compte ni clé, et rend une seule réponse classée par urgence.",
+        "en": "A single lookout only sees one slope. Vigie cross-checks four public databases, with no account and no key, and gives one answer sorted by urgency."
+      },
+      "items": [
+        {
+          "name": "OSV.dev",
+          "sign": {
+            "fr": "La fumée",
+            "en": "The smoke"
+          },
+          "text": {
+            "fr": "Les failles connues et les paquets malveillants des briques open source, comparés à ta version exacte. La base de Google et de l'OpenSSF regroupe les avis de GitHub, PyPA, RustSec, Go et d'autres.",
+            "en": "Known vulnerabilities and malicious packages in open source packages, matched on your exact version. Run by Google and OpenSSF, it gathers advisories from GitHub, PyPA, RustSec, Go and others."
+          }
+        },
+        {
+          "name": "CISA KEV",
+          "sign": {
+            "fr": "Le feu",
+            "en": "The fire"
+          },
+          "text": {
+            "fr": "Le catalogue des failles déjà exploitées dans de vraies attaques. Si l'une des tiennes y figure, Vigie la classe « à traiter tout de suite ».",
+            "en": "The catalogue of vulnerabilities already exploited in real attacks. If one of yours is in it, Vigie marks it “act now”."
+          }
+        },
+        {
+          "name": "EPSS",
+          "sign": {
+            "fr": "Le vent",
+            "en": "The wind"
+          },
+          "text": {
+            "fr": "Un score mis à jour chaque jour par FIRST.org : la probabilité qu'une faille soit bientôt exploitée. Il dit de quel côté le feu risque de partir.",
+            "en": "A score updated daily by FIRST.org: how likely a vulnerability is to be exploited soon. It tells you which way a fire might spread."
+          }
+        },
+        {
+          "name": "CERT-FR",
+          "sign": {
+            "fr": "Le bulletin régional",
+            "en": "The regional bulletin"
+          },
+          "text": {
+            "fr": "Les dernières alertes et les derniers avis de l'ANSSI, l'agence de l'État français. Seuls les bulletins récents sont disponibles.",
+            "en": "The latest alerts and advisories from ANSSI, the French government agency. Recent bulletins only."
+          }
+        }
+      ]
+    },
+    "features_title": {
+      "fr": "Ce que fait la vigie, concrètement",
+      "en": "What the lookout actually does"
+    },
+    "features_lede": {
+      "fr": "Elle regarde, elle prévient, elle dit où aller. Ton agent fait le reste.",
+      "en": "It watches, it warns, it says where to go. Your agent does the rest."
+    },
+    "features": [
+      {
+        "title": {
+          "fr": "Elle barre la route à l'arbre qui brûle",
+          "en": "It stops the burning tree at the gate"
+        },
+        "text": {
+          "fr": "Avant un npm install, pnpm add, yarn add, pip install, uv add ou poetry add, le crochet vérifie les briques. Si l'une a une faille connue de priorité haute ou est malveillante, l'installation est bloquée et l'agent reçoit le rapport et la correction.",
+          "en": "Before an npm install, pnpm add, yarn add, pip install, uv add or poetry add, the hook checks the packages. If one has a high-priority known vulnerability or is malicious, the install is blocked and the agent gets the report and the fix."
+        }
+      },
+      {
+        "title": {
+          "fr": "Elle balaie toute la forêt",
+          "en": "It scans the whole forest"
+        },
+        "text": {
+          "fr": "Donne-lui le dossier d'un projet : Vigie lit ses fichiers de dépendances (package-lock.json, pnpm-lock.yaml, yarn.lock, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod…) et vérifie chaque version trouvée.",
+          "en": "Give it a project folder: Vigie reads its dependency files (package-lock.json, pnpm-lock.yaml, yarn.lock, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod…) and checks every version it finds."
+        }
+      },
+      {
+        "title": {
+          "fr": "Elle donne l'endroit exact et le chemin",
+          "en": "It gives the exact spot and the way out"
+        },
+        "text": {
+          "fr": "Le contrôle porte sur ta version exacte, pas sur le nom de la brique. Pour chaque brique touchée, une ligne « What to do » indique la version vers laquelle passer.",
+          "en": "The check is on your exact version, not just the package name. For each affected package, a “What to do” line names the version to move to."
+        }
+      },
+      {
+        "title": {
+          "fr": "Elle ne dit jamais « rien à signaler » dans le brouillard",
+          "en": "It never calls “all clear” in the fog"
+        },
+        "text": {
+          "fr": "Une base qui ne répond pas est nommée dans le rapport. Si la vérification n'a pas pu se faire, le verdict est « incomplete », et l'agent doit te le dire.",
+          "en": "A database that does not answer is named in the report. If the check could not be done, the verdict is “incomplete”, and the agent has to tell you."
+        }
+      },
+      {
+        "title": {
+          "fr": "Elle surveille aussi au-delà des arbres",
+          "en": "It watches beyond the trees too"
+        },
+        "text": {
+          "fr": "PostgreSQL, nginx, Windows Server : pour ce qui n'est pas une brique, une veille par mot-clé remonte les bulletins récents du CERT-FR et les failles exploitées dans de vraies attaques.",
+          "en": "PostgreSQL, nginx, Windows Server: for what is not a package, a keyword watch brings up recent CERT-FR bulletins and vulnerabilities exploited in real attacks."
+        }
+      },
+      {
+        "title": {
+          "fr": "Une tour simple, que tu peux visiter",
+          "en": "A simple tower you can walk through"
+        },
+        "text": {
+          "fr": "Du Node.js tout simple, aucune dépendance, rien à installer avec npm. Pas de compte, pas de clé. Assez court pour être lu avant de lui faire confiance.",
+          "en": "Plain Node.js, no dependency, nothing to npm install. No account, no key. Short enough to read before you trust it."
+        }
+      }
+    ],
+    "report": {
+      "title": {
+        "fr": "Ce que ton agent reçoit",
+        "en": "What your agent receives"
+      },
+      "lede": {
+        "fr": "Voici de vraies réponses de Vigie, telles que l'agent les lit. Elles sont en anglais : c'est la langue dans laquelle l'outil parle aux agents.",
+        "en": "These are real answers from Vigie, exactly as the agent reads them."
+      },
+      "captions": {
+        "blocked": {
+          "fr": "Le crochet bloque l'installation de lodash 4.17.20 et donne à l'agent la version vers laquelle passer.",
+          "en": "The hook blocks the install of lodash 4.17.20 and gives the agent the version to move to."
+        },
+        "clean": {
+          "fr": "Rien de connu sur cette version : Vigie le dit, nomme les bases consultées et rappelle ses limites.",
+          "en": "Nothing known for this version: Vigie says so, names the databases it asked and restates its limits."
+        },
+        "incomplete": {
+          "fr": "Sans version exacte, pas de contrôle possible : le verdict est « incomplete » et la brique n'est pas présentée comme sûre.",
+          "en": "Without an exact version there is nothing to check: the verdict is “incomplete” and the package is not presented as safe."
+        },
+        "unreachable": {
+          "fr": "Bases injoignables : le crochet le dit et laisse passer la commande, sauf si tu as choisi le mode strict.",
+          "en": "Databases unreachable: the hook says so and lets the command through, unless you chose strict mode."
+        }
+      }
+    },
+    "install": {
+      "title": {
+        "fr": "Trois gestes pour monter la tour",
+        "en": "Three steps to raise the tower"
+      },
+      "lede": {
+        "fr": "Ton agent les fait pour toi avec le prompt d'installation. Si tu préfères les faire toi-même, les voici.",
+        "en": "Your agent does them for you with the setup prompt. If you would rather do them yourself, here they are."
+      },
+      "steps": [
+        {
+          "title": {
+            "fr": "Brancher le serveur MCP",
+            "en": "Connect the MCP server"
+          },
+          "text": {
+            "fr": "Clone le dépôt, puis déclare Vigie dans ton agent. C'est ce qui lui donne les outils de vérification.",
+            "en": "Clone the repository, then declare Vigie in your agent. This is what gives it the checking tools."
+          }
+        },
+        {
+          "title": {
+            "fr": "Poser le crochet",
+            "en": "Set the hook"
+          },
+          "text": {
+            "fr": "Il vérifie les briques avant chaque installation et le projet après chaque modification d'un fichier de dépendances. C'est lui qui rend le contrôle obligatoire.",
+            "en": "It checks packages before each install and the project after each edit of a dependency file. This is what makes the check mandatory."
+          }
+        },
+        {
+          "title": {
+            "fr": "Ajouter la règle",
+            "en": "Add the rule"
+          },
+          "text": {
+            "fr": "Trois lignes dans les consignes de ton agent (CLAUDE.md, AGENTS.md…) : vérifier avant d'ajouter une dépendance, vérifier avant de dire « c'est fini », te prévenir si le contrôle est incomplet.",
+            "en": "Three lines in your agent instructions (CLAUDE.md, AGENTS.md…): check before adding a dependency, check before saying “done”, tell you when the check is incomplete."
+          }
+        }
+      ],
+      "manual": {
+        "fr": "Lire l'installation pas à pas dans le README",
+        "en": "Read the step-by-step install in the README"
+      }
+    },
+    "limits": {
+      "title": {
+        "fr": "Ce que la vigie ne voit pas",
+        "en": "What the lookout cannot see"
+      },
+      "lede": {
+        "fr": "Une tour de guet ne remplace pas les pompiers, ni l'entretien de la forêt. Voici ses angles morts, sans détour.",
+        "en": "A lookout tower does not replace the fire crew, or looking after the forest. Here are its blind spots, stated plainly."
+      },
+      "items": [
+        {
+          "title": {
+            "fr": "Elle ne voit que la fumée déjà signalée",
+            "en": "It only sees smoke that has been reported"
+          },
+          "text": {
+            "fr": "Vigie ne connaît que les failles rendues publiques dans des briques publiées. Elle ne trouve ni les erreurs de ton propre code, ni les mauvais réglages, ni les failles que personne n'a encore signalées.",
+            "en": "Vigie only knows publicly disclosed vulnerabilities in published packages. It does not find flaws in your own code, misconfiguration, or vulnerabilities nobody has reported yet."
+          }
+        },
+        {
+          "title": {
+            "fr": "Le bulletin régional ne garde que les derniers numéros",
+            "en": "The regional bulletin only keeps recent issues"
+          },
+          "text": {
+            "fr": "Le CERT-FR ne publie que ses derniers bulletins. La veille par mot-clé compare des noms de produits, pas ta version exacte : une réponse vide ne prouve rien.",
+            "en": "CERT-FR only exposes its latest bulletins. The keyword watch matches product names, not your exact version: an empty answer proves nothing."
+          }
+        },
+        {
+          "title": {
+            "fr": "Sans carte précise, elle ne voit que la lisière",
+            "en": "Without a detailed map, it only sees the forest edge"
+          },
+          "text": {
+            "fr": "Avec un package.json seul, sans fichier de verrouillage, les dépendances indirectes ne sont pas vérifiées. Vigie l'écrit dans le rapport.",
+            "en": "With package.json alone and no lockfile, indirect dependencies are not checked. Vigie says so in the report."
+          }
+        },
+        {
+          "title": {
+            "fr": "Dans le brouillard, la barrière reste ouverte",
+            "en": "In the fog, the gate stays open"
+          },
+          "text": {
+            "fr": "Si les bases sont injoignables, le crochet laisse passer la commande et le signale. Pour bloquer dans ce cas, règle VIGIE_STRICT=1.",
+            "en": "If the databases are unreachable, the hook lets the command through and says so. To block instead, set VIGIE_STRICT=1."
+          }
+        },
+        {
+          "title": {
+            "fr": "La première ronde du jour prend un moment",
+            "en": "The first round of the day takes a moment"
+          },
+          "text": {
+            "fr": "Le premier appel de la journée télécharge les catalogues : environ 30 secondes. Ensuite, les résultats sont gardés sur ta machine.",
+            "en": "The first call of the day downloads the catalogues: about 30 seconds. After that, results are kept on your machine."
+          }
+        }
+      ]
+    },
+    "video": {
+      "title": {
+        "fr": "Vigie en une minute",
+        "en": "Vigie in a minute"
+      },
+      "pending": {
+        "fr": "Le film est en cours de fabrication.",
+        "en": "The film is being made."
+      },
+      "transcript_label": {
+        "fr": "Lire la transcription",
+        "en": "Read the transcript"
+      }
+    },
+    "source": {
+      "title": {
+        "fr": "Une tour ouverte à la visite",
+        "en": "A tower open to visitors"
+      },
+      "text": {
+        "fr": "Vigie est open source, sous licence MIT. Le code est court et sans dépendance : tu peux le lire, le vérifier, et ajouter une source avec un seul fichier.",
+        "en": "Vigie is open source under the MIT license. The code is short and has no dependency: you can read it, check it, and add a source with a single file."
+      },
+      "btn": {
+        "fr": "Voir le code sur GitHub",
+        "en": "View the code on GitHub"
+      }
+    },
+    "coffee": {
+      "title": {
+        "fr": "Un café pour la vigie ?",
+        "en": "A coffee for the lookout?"
+      },
+      "text": {
+        "fr": "Vigie est gratuit et le restera. Si l'outil t'a évité un départ de feu, tu peux m'offrir un café. C'est facultatif, et ça fait plaisir.",
+        "en": "Vigie is free and will stay free. If it saved you from a fire, you can buy me a coffee. Entirely optional, always appreciated."
+      },
+      "btn": {
+        "fr": "Offrir un café",
+        "en": "Buy me a coffee"
+      }
+    },
+    "faq": [
+      {
+        "q": {
+          "fr": "Est-ce vraiment gratuit ?",
+          "en": "Is it really free?"
+        },
+        "a": {
+          "fr": "Oui. Vigie est gratuit, open source (licence MIT), sans compte et sans clé. Les quatre bases interrogées sont publiques et gratuites elles aussi.",
+          "en": "Yes. Vigie is free, open source (MIT license), with no account and no key. The four databases it asks are public and free as well."
+        }
+      },
+      {
+        "q": {
+          "fr": "Qu'est-ce que Vigie vérifie exactement ?",
+          "en": "What exactly does Vigie check?"
+        },
+        "a": {
+          "fr": "Les failles connues et les paquets malveillants des briques que ton projet utilise, sur leur version exacte. Pour chaque faille : si elle est exploitée dans de vraies attaques, la probabilité qu'elle le soit bientôt, s'il existe un bulletin du CERT-FR, et la version vers laquelle passer.",
+          "en": "Known vulnerabilities and malicious packages in the packages your project uses, on their exact version. For each one: whether it is exploited in real attacks, how likely it is to be soon, whether a CERT-FR bulletin exists, and which version to move to."
+        }
+      },
+      {
+        "q": {
+          "fr": "Qu'est-ce que Vigie ne voit pas ?",
+          "en": "What does Vigie not see?"
+        },
+        "a": {
+          "fr": "Tout ce qui n'est pas une faille publique dans une brique publiée : les erreurs de ton propre code, les mauvais réglages, les failles pas encore signalées. Avec un package.json seul, les dépendances indirectes ne sont pas vérifiées. Et le CERT-FR ne donne que ses derniers bulletins. Un rapport sans alerte ne veut pas dire que ton projet est sûr.",
+          "en": "Anything that is not a public vulnerability in a published package: flaws in your own code, misconfiguration, vulnerabilities not reported yet. With package.json alone, indirect dependencies are not checked. And CERT-FR only gives its latest bulletins. A report with no finding does not mean your project is safe."
+        }
+      },
+      {
+        "q": {
+          "fr": "Qu'est-ce qui sort de ma machine ?",
+          "en": "What leaves my machine?"
+        },
+        "a": {
+          "fr": "Les noms et les versions de tes briques, et les identifiants publics des failles trouvées, envoyés aux bases publiques interrogées. Jamais ton code. Tu peux le vérifier : le code de Vigie est court et lisible.",
+          "en": "The names and versions of your packages, and the public ids of the vulnerabilities found, sent to the public databases it asks. Never your code. You can verify it: Vigie's code is short and readable."
+        }
+      },
+      {
+        "q": {
+          "fr": "Avec quels agents ça marche ?",
+          "en": "Which agents does it work with?"
+        },
+        "a": {
+          "fr": "Le serveur fonctionne avec tout agent compatible MCP : Claude Code, Codex, Cursor et les autres. Le crochet qui bloque les installations est écrit au format des hooks de Claude Code. Avec un autre agent, tu gardes les outils de vérification et la règle dans ses consignes.",
+          "en": "The server works with any MCP-compatible agent: Claude Code, Codex, Cursor and others. The hook that blocks installs is written in the Claude Code hook format. With another agent, you still get the checking tools and the rule in its instructions."
+        }
+      },
+      {
+        "q": {
+          "fr": "Quels langages sont couverts ?",
+          "en": "Which languages are covered?"
+        },
+        "a": {
+          "fr": "Brique par brique : npm, PyPI, Maven, Go, crates.io, NuGet, Packagist et RubyGems. Pour un dossier de projet, Vigie lit package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock et go.mod. Le crochet reconnaît les installations faites avec npm, pnpm, bun, yarn, pip, uv et poetry.",
+          "en": "Package by package: npm, PyPI, Maven, Go, crates.io, NuGet, Packagist and RubyGems. For a project folder, Vigie reads package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock and go.mod. The hook recognises installs made with npm, pnpm, bun, yarn, pip, uv and poetry."
+        }
+      },
+      {
+        "q": {
+          "fr": "Et si une base ne répond pas ?",
+          "en": "What if a database is down?"
+        },
+        "a": {
+          "fr": "Elle est nommée dans le rapport. Si une copie plus ancienne existe sur ta machine, Vigie s'en sert et le précise. Si OSV.dev ne répond pas, le verdict est « incomplete » : jamais « rien à signaler ». Le crochet, lui, laisse alors passer la commande, sauf avec VIGIE_STRICT=1.",
+          "en": "It is named in the report. If an older copy exists on your machine, Vigie uses it and says so. If OSV.dev does not answer, the verdict is “incomplete”, never “all clear”. The hook then lets the command through, unless VIGIE_STRICT=1 is set."
+        }
+      },
+      {
+        "q": {
+          "fr": "Est-ce que ça ralentit mon agent ?",
+          "en": "Does it slow my agent down?"
+        },
+        "a": {
+          "fr": "Le premier appel de la journée télécharge les catalogues, ce qui prend environ 30 secondes. Ensuite, les résultats sont gardés dans ~/.cache/vigie.",
+          "en": "The first call of the day downloads the catalogues, which takes about 30 seconds. After that, results are cached in ~/.cache/vigie."
+        }
+      },
+      {
+        "q": {
+          "fr": "Comment l'enlever ?",
+          "en": "How do I remove it?"
+        },
+        "a": {
+          "fr": "Défais les trois gestes de l'installation : retire le serveur MCP de ton agent, enlève le crochet de ses réglages, supprime la règle de ses consignes. Tu peux ensuite effacer le dossier de Vigie et ~/.cache/vigie. Ton agent peut le faire pour toi.",
+          "en": "Undo the three install steps: remove the MCP server from your agent, take the hook out of its settings, delete the rule from its instructions. You can then delete the Vigie folder and ~/.cache/vigie. Your agent can do it for you."
+        }
+      },
+      {
+        "q": {
+          "fr": "Pourquoi « Vigie » ?",
+          "en": "Why “Vigie”?"
+        },
+        "a": {
+          "fr": "Une vigie, c'est le poste de guet, et celui qui s'y tient. Comme le guetteur d'incendie en haut de sa tour, l'outil ne combat pas le feu : il le repère tôt et dit à l'équipe, ton agent, où aller et quoi faire.",
+          "en": "“Vigie” is French for a lookout: the watch post, and the person keeping it. Like a fire lookout in a tower, the tool does not fight the fire: it spots it early and tells the crew, your agent, where to go and what to do."
+        }
+      }
+    ],
+    "footer_note": {
+      "fr": "Vigie signale les failles publiques des briques publiées. Elle ne remplace ni une revue de sécurité, ni ta vigilance.",
+      "en": "Vigie reports public vulnerabilities in published packages. It does not replace a security review, or your own care."
+    },
+    "notfound": {
+      "title": {
+        "fr": "Rien à l'horizon",
+        "en": "Nothing on the horizon"
+      },
+      "text": {
+        "fr": "La vigie a beau scruter, cette page n'existe pas ou a changé d'adresse.",
+        "en": "The lookout has scanned every ridge: this page does not exist, or it has moved."
+      },
+      "back": {
+        "fr": "Retour à l'accueil",
+        "en": "Back to the home page"
+      }
+    },
+    "og": {
+      "line1": {
+        "fr": "Repère la fumée",
+        "en": "Spot the smoke"
+      },
+      "line2": {
+        "fr": "avant l'incendie.",
+        "en": "before the fire."
+      }
+    },
+    "og_alt": {
+      "fr": "Vigie : une tour de guet au-dessus d'une forêt, avec le texte « Repère la fumée avant l'incendie ».",
+      "en": "Vigie: a lookout tower above a forest, with the text “Spot the smoke before the fire”."
+    },
+    "hero_alt": {
+      "fr": "Illustration : une tour de guet en bois domine une forêt à l'aube ; au loin, une fine colonne de fumée s'élève entre les arbres.",
+      "en": "Illustration: a wooden lookout tower stands over a forest at dawn; in the distance, a thin column of smoke rises between the trees."
+    }
+  },
+  "seo": {
+    "software_extra": {
+      "softwareVersion": "0.1.0",
+      "softwareRequirements": "Node.js 18 or later. An MCP client (stdio).",
+      "featureList": {
+        "en": [
+          "Checks exact package versions for known vulnerabilities and malicious packages (npm, PyPI, Maven, Go, crates.io, NuGet, Packagist, RubyGems)",
+          "Reads a project's dependency files and checks every package version found",
+          "Cross-checks OSV.dev, CISA KEV, EPSS and CERT-FR in one prioritized report",
+          "Hook that blocks the install of a package that is malicious or has a high-priority known vulnerability",
+          "Keyword watch on CERT-FR bulletins and exploited vulnerabilities for non-package technologies",
+          "Names any source that could not be reached and returns an \"incomplete\" verdict instead of \"all clear\"",
+          "No account, no API key, zero dependencies"
+        ],
+        "fr": [
+          "Elle barre la route à l'arbre qui brûle : Avant un npm install, pnpm add, yarn add, pip install, uv add ou poetry add, le crochet vérifie les briques. Si l'une a une faille connue de priorité haute ou est malveillante, l'installation est bloquée et l'agent reçoit le rapport et la correction.",
+          "Elle balaie toute la forêt : Donne-lui le dossier d'un projet : Vigie lit ses fichiers de dépendances (package-lock.json, pnpm-lock.yaml, yarn.lock, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod…) et vérifie chaque version trouvée.",
+          "Elle donne l'endroit exact et le chemin : Le contrôle porte sur ta version exacte, pas sur le nom de la brique. Pour chaque brique touchée, une ligne « What to do » indique la version vers laquelle passer.",
+          "Elle ne dit jamais « rien à signaler » dans le brouillard : Une base qui ne répond pas est nommée dans le rapport. Si la vérification n'a pas pu se faire, le verdict est « incomplete », et l'agent doit te le dire.",
+          "Elle surveille aussi au-delà des arbres : PostgreSQL, nginx, Windows Server : pour ce qui n'est pas une brique, une veille par mot-clé remonte les bulletins récents du CERT-FR et les failles exploitées dans de vraies attaques.",
+          "Une tour simple, que tu peux visiter : Du Node.js tout simple, aucune dépendance, rien à installer avec npm. Pas de compte, pas de clé. Assez court pour être lu avant de lui faire confiance."
+        ]
+      }
+    },
+    "llms_txt": "# Vigie\n\n> Vigie is a free, open source (MIT) MCP server with a hook that makes coding agents check every dependency for known vulnerabilities across four public databases (OSV.dev, CISA KEV, EPSS, CERT-FR) and blocks the install of a dangerous package. No account, no API key, zero dependencies: plain Node.js 18+.\n\nVigie works with any MCP client over stdio (Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, Windsurf and others). The agent gives package names and exact versions; Vigie answers what is wrong, how urgent it is, and what to do. Version 0.1.0. Published by Connected Mate. Product names above are trademarks of their owners and are cited descriptively; there is no partnership.\n\n## Pages\n\n- [Vigie (English)](https://connected-mate.github.io/vigie/en/): what it does, a real report, install steps, limits, FAQ\n- [Vigie (français)](https://connected-mate.github.io/vigie/): the same page in French\n\n## Source and docs\n\n- [Repository](https://github.com/Connected-Mate/vigie): source code, MIT license\n- [README](https://github.com/Connected-Mate/vigie/blob/main/README.md): sources, tools, install, limits\n- [AGENT-SETUP.md](https://github.com/Connected-Mate/vigie/blob/main/AGENT-SETUP.md): step-by-step setup instructions a coding agent can follow on its own\n\n## Tools given to the agent\n\n- `check_packages`: check exact package versions (npm, PyPI, Maven, Go, crates.io, NuGet, Packagist, RubyGems) for known vulnerabilities and malicious packages\n- `check_project`: read a project folder's dependency files (package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod) and check everything found\n- `check_technologies`: keyword watch for what is not a package (for example \"PostgreSQL\", \"nginx\"): latest CERT-FR bulletins and vulnerabilities exploited in real attacks\n- `vulnerability_details`: everything known about one id (CVE, GHSA or any OSV id)\n- `list_sources`: the databases queried and what each covers\n\n## Sources queried\n\n- [OSV.dev](https://osv.dev) (Google / OpenSSF): known vulnerabilities and malicious packages, matched on the exact version\n- [CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog): whether a vulnerability is exploited in real attacks\n- [EPSS](https://www.first.org/epss/) (FIRST.org): probability that a vulnerability gets exploited soon\n- [CERT-FR](https://www.cert.ssi.gouv.fr) (ANSSI, French government): latest French government alerts and advisories\n\n## The hook\n\n- Before `npm install`, `pnpm add`, `bun add`, `yarn add`, `pip install`, `uv add` or `poetry add`, the packages are checked and the install is blocked if one is flagged as malicious or has a high-priority known vulnerability. The agent receives the report and the fix.\n- After an edit of a dependency file, the project is checked and the agent is told what to fix.\n- If the databases are unreachable the hook lets the command through; `VIGIE_STRICT=1` blocks instead.\n- The hook uses the Claude Code hook format (JSON on stdin, exit code 2 blocks).\n\n## Limits\n\n- Vigie only knows publicly disclosed vulnerabilities in published packages. It does not find flaws in your own code, misconfiguration, or vulnerabilities nobody has reported yet.\n- CERT-FR only exposes its latest bulletins: `check_technologies` matches product names, not your exact version, and an empty answer proves nothing.\n- With `package.json` alone (no lockfile), indirect dependencies are not checked. Vigie says so in the report.\n- An exact version is required; a package without one is reported as not checked and the verdict is \"incomplete\".\n- The first call of the day downloads the catalogues (about 30 seconds); results are then cached in `~/.cache/vigie`.\n- What leaves your machine: package names and versions, sent to the public APIs above. Never your code.\n- Vigie is not a substitute for a security audit and does not make a project \"secure\"; it reports what public databases know.\n",
+    "geo": {
+      "one_line_definition": {
+        "fr": "Vigie est un serveur MCP gratuit et open source (licence MIT), accompagné d'un crochet, qui fait vérifier aux agents de code les failles connues de chaque dépendance dans quatre bases publiques — OSV.dev, CISA KEV, EPSS et CERT-FR — et qui bloque l'installation d'un paquet dangereux.",
+        "en": "Vigie is a free, open source (MIT) MCP server with a hook that makes coding agents check every dependency for known vulnerabilities across four public databases — OSV.dev, CISA KEV, EPSS and CERT-FR — and blocks the install of a dangerous package."
+      },
+      "key_facts": {
+        "fr": [
+          "Vigie est gratuit, sous licence MIT, et ne demande ni compte ni clé API.",
+          "Vigie n'a aucune dépendance : il tourne avec Node.js 18 ou plus, sans rien installer par npm.",
+          "Vigie interroge quatre sources publiques : OSV.dev (Google / OpenSSF), CISA KEV, EPSS (FIRST.org) et le CERT-FR (ANSSI).",
+          "Vigie donne cinq outils à l'agent : check_packages, check_project, check_technologies, vulnerability_details et list_sources.",
+          "check_packages couvre huit écosystèmes : npm, PyPI, Maven, Go, crates.io, NuGet, Packagist et RubyGems.",
+          "check_project lit package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock et go.mod.",
+          "Le crochet de Vigie bloque une installation (npm, pnpm, bun, yarn, pip, uv, poetry) quand un paquet est malveillant ou porte une faille connue de haute priorité, et donne le correctif à l'agent.",
+          "Si une source est injoignable, le rapport la nomme et le verdict devient « incomplet » : Vigie ne dit jamais « rien à signaler » sans avoir pu vérifier.",
+          "Seuls les noms et les versions des paquets quittent la machine, vers les API publiques citées ; jamais le code.",
+          "Vigie ne connaît que les failles publiques des paquets publiés : pas les erreurs de ton propre code, pas les mauvais réglages, pas les failles encore inconnues."
+        ],
+        "en": [
+          "Vigie is free, MIT licensed, and needs no account and no API key.",
+          "Vigie has zero dependencies: it runs on plain Node.js 18 or later, with nothing to npm install.",
+          "Vigie queries four public sources: OSV.dev (Google / OpenSSF), CISA KEV, EPSS (FIRST.org) and CERT-FR (ANSSI, French government).",
+          "Vigie gives the agent five tools: check_packages, check_project, check_technologies, vulnerability_details and list_sources.",
+          "check_packages covers eight ecosystems: npm, PyPI, Maven, Go, crates.io, NuGet, Packagist and RubyGems.",
+          "check_project reads package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock and go.mod.",
+          "The Vigie hook blocks an install (npm, pnpm, bun, yarn, pip, uv, poetry) when a package is flagged as malicious or has a high-priority known vulnerability, and gives the agent the fix.",
+          "When a source is unreachable, the report names it and the verdict becomes \"incomplete\": Vigie never says \"all clear\" when it could not check.",
+          "Only package names and versions leave the machine, sent to the public APIs listed; never the code.",
+          "Vigie only knows publicly disclosed vulnerabilities in published packages: not flaws in your own code, not misconfiguration, not undisclosed vulnerabilities."
+        ]
+      },
+      "questions_people_ask": {
+        "fr": [
+          "Comment obliger mon agent de code à vérifier les failles avant d'installer un paquet ?",
+          "Existe-t-il un serveur MCP gratuit pour vérifier les vulnérabilités des dépendances ?",
+          "Vigie fonctionne-t-il avec Claude Code, Codex, Cursor ou Gemini CLI ?",
+          "Quelles bases de vulnérabilités Vigie interroge-t-il, et faut-il un compte ou une clé API ?",
+          "Que se passe-t-il si mon agent veut installer un paquet malveillant ou vulnérable ?",
+          "Est-ce que mon code est envoyé quelque part quand Vigie vérifie mes dépendances ?",
+          "Qu'est-ce que Vigie ne détecte pas ?",
+          "Quelle différence entre Vigie et npm audit ?"
+        ],
+        "en": [
+          "How do I make my coding agent check for vulnerabilities before it installs a package?",
+          "Is there a free MCP server that checks dependencies for known vulnerabilities?",
+          "Does Vigie work with Claude Code, Codex, Cursor or Gemini CLI?",
+          "Which vulnerability databases does Vigie query, and do I need an account or an API key?",
+          "What happens when my agent tries to install a malicious or vulnerable package?",
+          "Does Vigie send my code anywhere when it checks my dependencies?",
+          "What does Vigie not detect?",
+          "How is Vigie different from npm audit?"
+        ]
+      }
+    },
+    "ad_groups": [
+      {
+        "name": "MCP security server",
+        "intent": "Developers already using MCP who look for a security or vulnerability server to plug into their agent. Highest intent: they know the category and want an install command.",
+        "keywords": {
+          "fr": [
+            "serveur mcp sécurité",
+            "serveur mcp vulnérabilités",
+            "mcp osv",
+            "serveur mcp open source sécurité",
+            "mcp cve"
+          ],
+          "en": [
+            "mcp security server",
+            "mcp vulnerability scanner",
+            "osv mcp server",
+            "mcp server cve lookup",
+            "security mcp server open source"
+          ]
+        }
+      },
+      {
+        "name": "Dependency vulnerability check for AI coding agents",
+        "intent": "Developers worried that their coding agent adds or upgrades packages without checking them. They search by problem, not by MCP. Land on #agent or #features.",
+        "keywords": {
+          "fr": [
+            "vérifier vulnérabilités dépendances",
+            "vérifier failles dépendances npm",
+            "sécurité agent de code ia",
+            "sécuriser claude code dépendances",
+            "scanner vulnérabilités dépendances open source"
+          ],
+          "en": [
+            "dependency vulnerability scanner for ai agents",
+            "ai coding agent security",
+            "secure ai coding agent dependencies",
+            "check cve before npm install",
+            "claude code security hook"
+          ]
+        }
+      },
+      {
+        "name": "Supply chain and malicious packages",
+        "intent": "People who read about malicious or hallucinated packages (slopsquatting) and want a guard at install time. Be exact in the ad: Vigie blocks packages already flagged as malicious or with a high-priority known vulnerability, not unknown ones.",
+        "keywords": {
+          "fr": [
+            "paquet npm malveillant détection",
+            "bloquer installation paquet vulnérable",
+            "sécurité chaîne d'approvisionnement logicielle",
+            "paquet pypi malveillant",
+            "slopsquatting"
+          ],
+          "en": [
+            "malicious package detection npm",
+            "block vulnerable package install",
+            "slopsquatting protection",
+            "software supply chain security ai agents",
+            "malicious pypi package check"
+          ]
+        }
+      },
+      {
+        "name": "CERT-FR / ANSSI watch (France)",
+        "intent": "French developers and security leads who follow CERT-FR bulletins and want them brought to their agent, next to KEV and EPSS. FR campaign first; the EN group is small and optional.",
+        "keywords": {
+          "fr": [
+            "veille cert-fr vulnérabilités",
+            "alertes anssi cert-fr dépendances",
+            "failles exploitées cisa kev",
+            "score epss vulnérabilité",
+            "veille vulnérabilités automatique"
+          ],
+          "en": [
+            "cert-fr advisories api",
+            "cisa kev epss check",
+            "known exploited vulnerabilities check",
+            "epss score lookup tool"
+          ]
+        }
+      }
+    ],
+    "sitelinks": {
+      "fr": [
+        {
+          "text": "Brancher ton agent",
+          "desc1": "Une consigne à coller dans l'agent",
+          "desc2": "Fonctionne avec tout client MCP",
+          "anchor": "#agent"
+        },
+        {
+          "text": "Ce que Vigie vérifie",
+          "desc1": "Paquets, projet, technologies",
+          "desc2": "Quatre bases publiques croisées",
+          "anchor": "#features"
+        },
+        {
+          "text": "Voir un vrai rapport",
+          "desc1": "Quoi, quelle urgence, quoi faire",
+          "desc2": "Les sources interrogées sont citées",
+          "anchor": "#report"
+        },
+        {
+          "text": "Les limites, sans détour",
+          "desc1": "Failles publiques seulement",
+          "desc2": "Pas ton propre code ni tes réglages",
+          "anchor": "#limits"
+        }
+      ],
+      "en": [
+        {
+          "text": "Connect Your Agent",
+          "desc1": "One prompt to paste in your agent",
+          "desc2": "Works with any MCP client",
+          "anchor": "#agent"
+        },
+        {
+          "text": "What Vigie Checks",
+          "desc1": "Packages, projects, technologies",
+          "desc2": "Four public databases cross-checked",
+          "anchor": "#features"
+        },
+        {
+          "text": "See a Real Report",
+          "desc1": "What is wrong, how urgent, the fix",
+          "desc2": "Every source queried is named",
+          "anchor": "#report"
+        },
+        {
+          "text": "Limits, Stated Plainly",
+          "desc1": "Publicly known flaws only",
+          "desc2": "Not your own code or settings",
+          "anchor": "#limits"
+        }
+      ]
+    },
+    "callouts": {
+      "fr": [
+        "Gratuit",
+        "Licence MIT",
+        "Sans compte ni clé API",
+        "Aucune dépendance",
+        "Ton code ne sort jamais",
+        "Sources publiques nommées"
+      ],
+      "en": [
+        "Free",
+        "MIT License",
+        "No Account, No API Key",
+        "Zero Dependencies",
+        "Your Code Never Leaves",
+        "Named Public Sources"
+      ]
+    },
+    "title_options": {
+      "fr": [
+        "Vigie — ton agent de code vérifie les failles connues, à chaque fois",
+        "Vigie — serveur MCP gratuit qui vérifie les failles des dépendances",
+        "Vigie — le serveur MCP qui bloque l'installation d'un paquet dangereux"
+      ],
+      "en": [
+        "Vigie — your coding agent checks known vulnerabilities, every time",
+        "Vigie — free MCP server that checks dependencies for known flaws",
+        "Vigie — the MCP server that blocks dangerous package installs"
+      ]
+    },
+    "description_options": {
+      "fr": [
+        "Serveur MCP gratuit et open source : ton agent de code vérifie chaque dépendance dans OSV.dev, CISA KEV, EPSS et CERT-FR. Sans compte, sans clé API.",
+        "Vigie oblige ton agent de code à vérifier les failles connues avant d'installer un paquet. Un crochet bloque les paquets dangereux. Gratuit, licence MIT.",
+        "Quatre bases publiques, un seul rapport : ce qui ne va pas, l'urgence, quoi faire. Vigie est un serveur MCP sans dépendance, pour tout agent de code."
+      ],
+      "en": [
+        "Free, open source MCP server: your coding agent checks every dependency against OSV.dev, CISA KEV, EPSS and CERT-FR. No account, no API key.",
+        "Vigie makes your coding agent check known vulnerabilities before it installs a package. A hook blocks dangerous installs. Free, MIT licensed.",
+        "Four public databases, one report: what is wrong, how urgent, what to do. Vigie is a zero-dependency MCP server for any coding agent."
+      ]
+    },
+    "keyword_research_notes": {
+      "checked_on_the_web": [
+        "Category naming (web search, 22/11/2026): directories and project pages call this \"OSV MCP server\", \"dependency vulnerability scanner MCP\", \"dependency checker MCP\", \"MCP security audit\". \"MCP security server\" is ambiguous: many results under that phrase are about securing MCP servers themselves, not about a server that checks dependencies — hence the more specific keywords and the ad group split.",
+        "The category is already populated: several free OSV-based MCP servers exist (listed on Glama, LobeHub, PyPI, npm), at least one also crosses EPSS and CISA KEV, and GitHub's own MCP server has dependency scanning in public preview (tied to Dependabot alerts). So no \"first\" or \"only\" claim anywhere. What I did not find in the results: another one that also brings CERT-FR bulletins, or that ships an install-blocking hook — but I did not audit each competitor, so this must NOT be claimed as unique.",
+        "\"Slopsquatting\" is the established word (Trend Micro, Socket, Cloud Security Alliance, TechTarget) for packages invented by AI and registered by attackers. Usable as a keyword, but Vigie only blocks packages already flagged in OSV as malicious or carrying a high-priority known vulnerability: a brand-new hallucinated package not yet flagged is not caught. Ads in that group must not promise slopsquatting protection in their text.",
+        "French phrasing: French results for this topic are thin and mostly English tool pages; French developers largely search in English. The FR keywords are natural phrasings, not observed query data."
+      ],
+      "not_verified": [
+        "Search volumes, cost per click and competition: UNKNOWN for every keyword, FR and EN. I have no access to Google Keyword Planner or a similar tool; no number is given and none should be assumed. Expect low volumes on the MCP-specific terms. Check in Keyword Planner before any budget.",
+        "Trademark use in keywords: \"claude code\" appears in two keywords (bidding on a third-party term is generally allowed, using it in ad text is restricted). The headlines and descriptions contain no third-party product brand; the source names OSV.dev, CISA KEV, EPSS and CERT-FR are cited factually. Not verified against the current Google Ads trademark policy for each country.",
+        "AGENT-SETUP.md is linked in llms.txt but does not exist in the project folder yet; the repo and the site are not live. All URLs (including the `main` branch in blob links) are the planned ones and must be re-checked at launch.",
+        "Sitelink text \"One prompt to paste in your agent\" and the #agent, #report, #limits, #faq, #install anchors assume the site sections planned in the brief; I could not check them against a built page.",
+        "\"Your code never leaves\" / \"Ton code ne sort jamais\" comes from the README (only package names and versions are sent). True for the MCP tools and the hook as read in the code; the landing page must state it literally for the callout to be allowed.",
+        "Windows support: the code is plain Node.js, but I did not run it on Windows."
+      ],
+      "ads_compliance_reminders": [
+        "Tutoiement is used consistently in FR ads, to match the site.",
+        "\"4 bases\" / \"4 public sources\" is the count in the README today; update the ads if a source is added or removed.",
+        "\"Blocks dangerous installs\" is true only once the hook is set up (step 2 of the install) and for npm, pnpm, bun, yarn, pip, uv and poetry commands; the landing page must say so.",
+        "Nothing is bought; a conversion tag would require a CNIL consent banner — decide with the owner first."
+      ]
+    }
+  }
+}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe0dc"/><stop offset=".62" stop-color="#f6e6cc"/><stop offset="1" stop-color="#f3bd8c"/></linearGradient>
+<clipPath id="r"><rect width="512" height="512" rx="112"/></clipPath></defs>
+<g clip-path="url(#r)">
+<rect width="512" height="512" fill="url(#s)"/>
+<circle cx="372" cy="318" r="58" fill="#fff3d6"/>
+<path d="M352,300 c-16,-34 18,-52 4,-88 c-12,-30 14,-46 6,-74" fill="none" stroke="#6f7c77" stroke-width="13" stroke-linecap="round" opacity=".8"/>
+<path d="M0,372 C90,330 170,352 256,372 S430,330 512,362 V512 H0Z" fill="#7fa594"/>
+<path d="M0,420 C110,384 200,404 290,420 S450,392 512,410 V512 H0Z" fill="#2f5d4b"/>
+<g fill="none" stroke="#1c2b25" stroke-width="13" stroke-linecap="round">
+<path d="M150,440 L176,290 M266,440 L240,290 M158,392 L258,392 M166,340 L250,340"/>
+<path d="M160,390 L248,342 M256,390 L168,342" stroke-width="7"/>
+</g>
+<rect x="128" y="276" width="160" height="16" rx="4" fill="#1c2b25"/>
+<rect x="152" y="200" width="112" height="80" rx="5" fill="#1c2b25"/>
+<rect x="164" y="214" width="88" height="34" rx="3" fill="#ffd98a"/>
+<path d="M186,214 V248 M208,214 V248 M230,214 V248" stroke="#1c2b25" stroke-width="6"/>
+<path d="M124,206 L208,154 L292,206Z" fill="#b4441c"/>
+<path d="M0,470 C130,440 260,462 380,470 S480,452 512,460 V512 H0Z" fill="#1f3d32"/>
+</g></svg>

@@ -1,0 +1,28 @@
+Vigie blocked this install: 1 package(s) with a high-priority known vulnerability.
+
+VERDICT: 4 known vulnerabilities in 1 of 1 package version(s).
+
+## [HIGH] lodash@4.17.20 (npm)
+What to do: Upgrade lodash to 4.18.0 or later (fixes 4 of 4).
+- GHSA-35jh-r3h4-6jhm (CVE-2021-23337) · severity HIGH · fixed in 4.17.21 · exploit probability 20%
+  Command Injection in lodash
+  https://osv.dev/vulnerability/GHSA-35jh-r3h4-6jhm
+- GHSA-r5fr-rjxr-66jc (CVE-2026-4800) · severity HIGH · fixed in 4.18.0 · exploit probability 3% · CERT-FR CERTFR-2026-AVI-1576
+  lodash vulnerable to Code Injection via `_.template` imports key names
+  https://osv.dev/vulnerability/GHSA-r5fr-rjxr-66jc
+- GHSA-29mw-wpgm-hmr9 (CVE-2020-28500) · severity MEDIUM · fixed in 4.17.21 · exploit probability 7%
+  Regular Expression Denial of Service (ReDoS) in lodash
+  https://osv.dev/vulnerability/GHSA-29mw-wpgm-hmr9
+- GHSA-xxjr-mmjv-4gpg (CVE-2025-13465) · severity MEDIUM · fixed in 4.17.23 · exploit probability 2%
+  Lodash has Prototype Pollution Vulnerability in `_.unset`, `_.omit`, and `_.pullAt` functions
+  https://osv.dev/vulnerability/GHSA-xxjr-mmjv-4gpg
+
+Sources:
+- OSV.dev (Google / OpenSSF): ok
+- CISA Known Exploited Vulnerabilities: ok
+- CERT-FR (ANSSI, French government): ok
+- EPSS (FIRST.org): ok
+
+Limits: only publicly known vulnerabilities in published packages are covered — not flaws in your own code, not misconfiguration, not undisclosed vulnerabilities.
+
+Fix these (use the "What to do" lines) or explain to the user why you cannot.

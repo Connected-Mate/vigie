@@ -1,0 +1,48 @@
+# Vigie
+
+> Vigie is a free, open source (MIT) MCP server with a hook that makes coding agents check every dependency for known vulnerabilities across four public databases (OSV.dev, CISA KEV, EPSS, CERT-FR) and blocks the install of a dangerous package. No account, no API key, zero dependencies: plain Node.js 18+.
+
+Vigie works with any MCP client over stdio (Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, Windsurf and others). The agent gives package names and exact versions; Vigie answers what is wrong, how urgent it is, and what to do. Version 0.1.0. Published by Connected Mate. Product names above are trademarks of their owners and are cited descriptively; there is no partnership.
+
+## Pages
+
+- [Vigie (English)](https://connected-mate.github.io/vigie/en/): what it does, a real report, install steps, limits, FAQ
+- [Vigie (français)](https://connected-mate.github.io/vigie/): the same page in French
+
+## Source and docs
+
+- [Repository](https://github.com/Connected-Mate/vigie): source code, MIT license
+- [README](https://github.com/Connected-Mate/vigie/blob/main/README.md): sources, tools, install, limits
+- [AGENT-SETUP.md](https://github.com/Connected-Mate/vigie/blob/main/AGENT-SETUP.md): step-by-step setup instructions a coding agent can follow on its own
+
+## Tools given to the agent
+
+- `check_packages`: check exact package versions (npm, PyPI, Maven, Go, crates.io, NuGet, Packagist, RubyGems) for known vulnerabilities and malicious packages
+- `check_project`: read a project folder's dependency files (package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod) and check everything found
+- `check_technologies`: keyword watch for what is not a package (for example "PostgreSQL", "nginx"): latest CERT-FR bulletins and vulnerabilities exploited in real attacks
+- `vulnerability_details`: everything known about one id (CVE, GHSA or any OSV id)
+- `list_sources`: the databases queried and what each covers
+
+## Sources queried
+
+- [OSV.dev](https://osv.dev) (Google / OpenSSF): known vulnerabilities and malicious packages, matched on the exact version
+- [CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog): whether a vulnerability is exploited in real attacks
+- [EPSS](https://www.first.org/epss/) (FIRST.org): probability that a vulnerability gets exploited soon
+- [CERT-FR](https://www.cert.ssi.gouv.fr) (ANSSI, French government): latest French government alerts and advisories
+
+## The hook
+
+- Before `npm install`, `pnpm add`, `bun add`, `yarn add`, `pip install`, `uv add` or `poetry add`, the packages are checked and the install is blocked if one is flagged as malicious or has a high-priority known vulnerability. The agent receives the report and the fix.
+- After an edit of a dependency file, the project is checked and the agent is told what to fix.
+- If the databases are unreachable the hook lets the command through; `VIGIE_STRICT=1` blocks instead.
+- The hook uses the Claude Code hook format (JSON on stdin, exit code 2 blocks).
+
+## Limits
+
+- Vigie only knows publicly disclosed vulnerabilities in published packages. It does not find flaws in your own code, misconfiguration, or vulnerabilities nobody has reported yet.
+- CERT-FR only exposes its latest bulletins: `check_technologies` matches product names, not your exact version, and an empty answer proves nothing.
+- With `package.json` alone (no lockfile), indirect dependencies are not checked. Vigie says so in the report.
+- An exact version is required; a package without one is reported as not checked and the verdict is "incomplete".
+- The first call of the day downloads the catalogues (about 30 seconds); results are then cached in `~/.cache/vigie`.
+- What leaves your machine: package names and versions, sent to the public APIs above. Never your code.
+- Vigie is not a substitute for a security audit and does not make a project "secure"; it reports what public databases know.

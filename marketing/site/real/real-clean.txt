@@ -1,0 +1,9 @@
+VERDICT: no known vulnerability in the 1 package version(s) checked.
+
+Sources:
+- OSV.dev (Google / OpenSSF): ok
+- EPSS (FIRST.org): ok
+- CISA Known Exploited Vulnerabilities: ok
+- CERT-FR (ANSSI, French government): ok
+
+Limits: only publicly known vulnerabilities in published packages are covered — not flaws in your own code, not misconfiguration, not undisclosed vulnerabilities.
