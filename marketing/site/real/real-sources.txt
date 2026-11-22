@@ -1,4 +1,0 @@
-- OSV.dev (Google / OpenSSF) — Known vulnerabilities and malicious packages in open source packages, matched by exact version. (https://osv.dev)
-- CISA Known Exploited Vulnerabilities — Vulnerabilities proven to be exploited in the wild (any product, open source or commercial). (https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
-- EPSS (FIRST.org) — A daily score (0 to 1) estimating how likely each CVE is to be exploited soon. (https://www.first.org/epss/)
-- CERT-FR (ANSSI, French government) — Latest French government alerts and advisories (recent bulletins only), matched by CVE or by product name. (https://www.cert.ssi.gouv.fr)

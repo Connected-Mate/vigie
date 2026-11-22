@@ -1,9 +1,6 @@
 VERDICT: INCOMPLETE — the check could not be completed. Do NOT treat these packages as safe.
-No valid package to check.
-
-Not checked (1):
-- lodash: missing or non-exact version (an exact version is required, e.g. 4.17.20)
 
 Sources:
+- OSV.dev (Google / OpenSSF): UNAVAILABLE (cannot reach api.osv.dev (ENOTFOUND))
 
 Limits: only publicly known vulnerabilities in published packages are covered — not flaws in your own code, not misconfiguration, not undisclosed vulnerabilities.

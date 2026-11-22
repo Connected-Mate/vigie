@@ -1,27 +1,26 @@
 # Vigie
 
-> Vigie is a free, open source (MIT) MCP server with a hook that makes coding agents check every dependency for known vulnerabilities across four public databases (OSV.dev, CISA KEV, EPSS, CERT-FR) and blocks the install of a dangerous package. No account, no API key, zero dependencies: plain Node.js 18+.
+> Vigie is a free, open source (MIT) lookout for known vulnerabilities: an MCP server, a hook and a command line that make coding agents check every dependency across four public vulnerability databases (OSV.dev, CISA KEV, EPSS, CERT-FR), with deps.dev for early signals, and block the install of a dangerous package. No account, no API key, zero dependencies: plain Node.js 18+.
 
-Vigie works with any MCP client over stdio (Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, Windsurf and others). The agent gives package names and exact versions; Vigie answers what is wrong, how urgent it is, and what to do. Version 0.1.0. Published by Connected Mate. Product names above are trademarks of their owners and are cited descriptively; there is no partnership.
+Vigie works with any MCP client over stdio (Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, Windsurf and others). The agent gives package names and versions; Vigie answers what is wrong, how urgent it is, and what version to move to. The recommended version is itself checked before it is recommended. Version 1.0.0. Published by Connected Mate. Product names above are trademarks of their owners and are cited descriptively; there is no partnership.
 
 ## Pages
 
-- [Vigie (English)](https://connected-mate.github.io/vigie/en/): what it does, a real report, install steps, limits, FAQ
+- [Vigie (English)](https://connected-mate.github.io/vigie/en/): what it does, real reports, install steps, limits, FAQ
 - [Vigie (français)](https://connected-mate.github.io/vigie/): the same page in French
 
 ## Source and docs
 
 - [Repository](https://github.com/Connected-Mate/vigie): source code, MIT license
-- [README](https://github.com/Connected-Mate/vigie/blob/main/README.md): sources, tools, install, limits
+- [README](https://github.com/Connected-Mate/vigie/blob/main/README.md): sources, tools, hook, command line, limits
 - [AGENT-SETUP.md](https://github.com/Connected-Mate/vigie/blob/main/AGENT-SETUP.md): step-by-step setup instructions a coding agent can follow on its own
+- [CHANGELOG](https://github.com/Connected-Mate/vigie/blob/main/CHANGELOG.md)
 
-## Tools given to the agent
+## Three ways in, one engine
 
-- `check_packages`: check exact package versions (npm, PyPI, Maven, Go, crates.io, NuGet, Packagist, RubyGems) for known vulnerabilities and malicious packages
-- `check_project`: read a project folder's dependency files (package-lock.json, pnpm-lock.yaml, yarn.lock, package.json, requirements.txt, poetry.lock, uv.lock, Cargo.lock, go.mod) and check everything found
-- `check_technologies`: keyword watch for what is not a package (for example "PostgreSQL", "nginx"): latest CERT-FR bulletins and vulnerabilities exploited in real attacks
-- `vulnerability_details`: everything known about one id (CVE, GHSA or any OSV id)
-- `list_sources`: the databases queried and what each covers
+- MCP tools for the agent: `check_packages` (exact versions; npm, PyPI, Maven, Go, crates.io, NuGet, Packagist, RubyGems, Pub, Hex), `check_project` (reads a project folder and its sub-folders, 19 dependency file formats), `check_technologies` (keyword watch for what is not a package: latest CERT-FR bulletins and vulnerabilities exploited in real attacks), `vulnerability_details` (one CVE, GHSA or OSV id), `list_sources`.
+- A hook: before a command that installs or runs a package, the version it would really bring is worked out and checked together with what it pulls in; the command is blocked when the package is malicious or has a high-priority known vulnerability. After an install or an edit of a dependency file, the project is checked. It never holds the agent more than 20 seconds; if the databases are unreachable it lets the command through and says so (`VIGIE_STRICT=1` blocks instead). Proven inside real Claude Code sessions; support for Codex, Gemini CLI, Cursor, Copilot and Devin/Windsurf is built from their documentation.
+- A command line for people and CI: `vigie check` (a folder, or `npm:lodash@4.17.20`), `--json`, `--fail-on`. Exit code 0: nothing high-priority; 1: high-priority findings; 2: the check could not be completed.
 
 ## Sources queried
 
@@ -29,20 +28,17 @@ Vigie works with any MCP client over stdio (Claude Code, Codex, Cursor, Gemini C
 - [CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog): whether a vulnerability is exploited in real attacks
 - [EPSS](https://www.first.org/epss/) (FIRST.org): probability that a vulnerability gets exploited soon
 - [CERT-FR](https://www.cert.ssi.gouv.fr) (ANSSI, French government): latest French government alerts and advisories
+- [deps.dev](https://deps.dev) (Google Open Source Insights): not vulnerabilities, signals: a version deprecated by its author, a version published in the last 3 days, and the packages an install pulls in
 
-## The hook
-
-- Before `npm install`, `pnpm add`, `bun add`, `yarn add`, `pip install`, `uv add` or `poetry add`, the packages are checked and the install is blocked if one is flagged as malicious or has a high-priority known vulnerability. The agent receives the report and the fix.
-- After an edit of a dependency file, the project is checked and the agent is told what to fix.
-- If the databases are unreachable the hook lets the command through; `VIGIE_STRICT=1` blocks instead.
-- The hook uses the Claude Code hook format (JSON on stdin, exit code 2 blocks).
+Priorities in a report: ACT NOW (exploited in real attacks, malicious package, or open CERT-FR alert), HIGH (critical or high severity, or exploit probability of 10 % and more), MEDIUM, LOW.
 
 ## Limits
 
-- Vigie only knows publicly disclosed vulnerabilities in published packages. It does not find flaws in your own code, misconfiguration, or vulnerabilities nobody has reported yet.
+- Vigie only knows publicly disclosed vulnerabilities in published packages. It does not find flaws in your own code, misconfiguration, or vulnerabilities nobody has reported yet. A clean verdict means "nothing known today", not "safe".
+- A brand-new malicious release is not in any database yet. Vigie says when a version is less than 3 days old; it cannot say it is hostile.
 - CERT-FR only exposes its latest bulletins: `check_technologies` matches product names, not your exact version, and an empty answer proves nothing.
-- With `package.json` alone (no lockfile), indirect dependencies are not checked. Vigie says so in the report.
-- An exact version is required; a package without one is reported as not checked and the verdict is "incomplete".
-- The first call of the day downloads the catalogues (about 30 seconds); results are then cached in `~/.cache/vigie`.
-- What leaves your machine: package names and versions, sent to the public APIs above. Never your code.
+- Without a lockfile, only the versions written in the file are checked, not what they pull in. Vigie says so in the report.
+- The hook reads shell commands; it is a guardrail, not a sandbox. An install hidden in a script is not seen before it runs.
+- Tested on macOS with Node 22. Written for Node 18+ and for Windows paths, not yet run there.
+- What leaves your machine: package names and versions, sent to the public APIs above. Never your code or your paths.
 - Vigie is not a substitute for a security audit and does not make a project "secure"; it reports what public databases know.

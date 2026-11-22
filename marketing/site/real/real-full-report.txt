@@ -1,7 +1,7 @@
-VERDICT: 14 known vulnerabilities in 3 of 4 package version(s) — 1 package(s) need action NOW.
+VERDICT: 14 known vulnerabilities in 3 of 4 package version(s) — 1 package(s) need action NOW, 1 high priority.
 
 ## [ACT NOW] org.apache.logging.log4j:log4j-core@2.14.1 (Maven)
-What to do: Upgrade org.apache.logging.log4j:log4j-core to 2.25.4 or later (fixes 8 of 8).
+What to do: Upgrade org.apache.logging.log4j:log4j-core to 2.25.4 (fixes 8 of 8; that version has no known vulnerability today).
 - GHSA-7rjr-3q55-vv33 (CVE-2021-45046) · severity CRITICAL · fixed in 2.16.0 · exploited in real attacks (ransomware) · exploit probability 100%
   Incomplete fix for Apache Log4j vulnerability
   https://osv.dev/vulnerability/GHSA-7rjr-3q55-vv33
@@ -28,7 +28,7 @@ What to do: Upgrade org.apache.logging.log4j:log4j-core to 2.25.4 or later (fixe
   https://osv.dev/vulnerability/GHSA-vc5p-v9hr-52mj
 
 ## [HIGH] lodash@4.17.20 (npm)
-What to do: Upgrade lodash to 4.18.0 or later (fixes 4 of 4).
+What to do: Upgrade lodash to 4.18.1, the current release (fixes 4 of 4; the first fixed version 4.18.0 still has other known vulnerabilities).
 - GHSA-35jh-r3h4-6jhm (CVE-2021-23337) · severity HIGH · fixed in 4.17.21 · exploit probability 20%
   Command Injection in lodash
   https://osv.dev/vulnerability/GHSA-35jh-r3h4-6jhm
@@ -43,7 +43,7 @@ What to do: Upgrade lodash to 4.18.0 or later (fixes 4 of 4).
   https://osv.dev/vulnerability/GHSA-xxjr-mmjv-4gpg
 
 ## [MEDIUM] express@4.17.1 (npm)
-What to do: Upgrade express to 4.20.0 or later (fixes 2 of 2).
+What to do: Upgrade express to 4.20.0 (fixes 2 of 2; that version has no known vulnerability today).
 - GHSA-rv95-896h-c2vc (CVE-2024-29041) · severity MEDIUM · fixed in 4.19.2
   Express.js Open Redirect in malformed URLs
   https://osv.dev/vulnerability/GHSA-rv95-896h-c2vc
@@ -51,10 +51,14 @@ What to do: Upgrade express to 4.20.0 or later (fixes 2 of 2).
   express vulnerable to XSS via response.redirect()
   https://osv.dev/vulnerability/GHSA-qw6h-vgh9-j6wx
 
+Worth knowing (not vulnerabilities):
+- left-pad@1.3.0: deprecated by its author: use String.prototype.padStart()
+
 Sources:
 - OSV.dev (Google / OpenSSF): ok
+- deps.dev (Google Open Source Insights): ok
 - CISA Known Exploited Vulnerabilities: ok
-- EPSS (FIRST.org): ok
 - CERT-FR (ANSSI, French government): ok
+- EPSS (FIRST.org): ok
 
 Limits: only publicly known vulnerabilities in published packages are covered — not flaws in your own code, not misconfiguration, not undisclosed vulnerabilities.

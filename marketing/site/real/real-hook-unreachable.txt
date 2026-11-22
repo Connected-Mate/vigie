@@ -1,1 +1,1 @@
-Vigie could not check the dependencies (databases unreachable). Not blocking; check again later.
+Vigie could not check lodash@4.17.20 (vulnerability databases unreachable or too slow). Not blocked. Run the check again later (Vigie check_project) and tell the user this install was not verified.

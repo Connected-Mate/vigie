@@ -42,13 +42,19 @@
   all('[data-copy]').forEach(function (btn) {
     var label = btn.querySelector('[data-copy-label]') || btn;
     var original = label.textContent;
+    var hint = btn.parentNode.parentNode.querySelector('[data-copy-hint]');
     var timer = null;
     function done() {
       announce(btn.getAttribute('data-copied'));
-      label.textContent = btn.getAttribute('data-copied');
+      btn.style.minWidth = btn.offsetWidth + 'px'; // the button keeps its size, its neighbours do not jump
+      label.textContent = btn.getAttribute('data-copied-short') || btn.getAttribute('data-copied');
       btn.classList.add('is-copied');
+      if (hint) { hint.textContent = btn.getAttribute('data-copied'); hint.classList.add('is-on'); }
       clearTimeout(timer);
-      timer = setTimeout(function () { label.textContent = original; btn.classList.remove('is-copied'); }, 2600);
+      timer = setTimeout(function () {
+        label.textContent = original; btn.classList.remove('is-copied');
+        if (hint) hint.classList.remove('is-on');
+      }, 3200);
     }
     btn.addEventListener('click', function () {
       var text = btn.getAttribute('data-copy');
@@ -152,8 +158,27 @@
       pkgs[id].addEventListener('click', function () { tl.select(tabOf(id), false); });
     });
     var replay = hero.querySelector('[data-replay]');
-    if (replay) replay.addEventListener('click', play);
+    var freeze = hero.querySelector('[data-freeze]');
+    function setFrozen(on) {
+      hero.classList.toggle('is-frozen', on);
+      if (!freeze) return;
+      freeze.setAttribute('aria-pressed', on ? 'true' : 'false');
+      freeze.querySelector('[data-freeze-label]').textContent = freeze.getAttribute(on ? 'data-on' : 'data-off');
+    }
+    if (freeze) {
+      if (reduce) freeze.hidden = true;
+      freeze.addEventListener('click', function () {
+        var on = !hero.classList.contains('is-frozen');
+        if (on && playing) finish();
+        setFrozen(on);
+      });
+    }
+    if (replay) replay.addEventListener('click', function () { setFrozen(false); play(); });
     play();
+    // Nothing loops while the scene is out of sight.
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) { hero.classList.toggle('is-away', !entries[0].isIntersecting); }).observe(hero);
+    }
 
     // Depth: the ridges slide a little on scroll and under the pointer. Transform only.
     var layers = all('.lay', hero).map(function (el) { return { el: el, d: parseFloat(el.getAttribute('data-depth')) || 0 }; });
@@ -186,7 +211,7 @@
         io.unobserve(e.target);
         setTimeout(function () { e.target.classList.add('is-done'); }, 1800);
       });
-    }, { rootMargin: '0px 0px -12% 0px' });
+    }, { rootMargin: '0px 0px -4% 0px' });
     reveals.forEach(function (el) { el.classList.add('will-reveal'); io.observe(el); });
   }
 
@@ -196,5 +221,9 @@
     new IntersectionObserver(function (entries) {
       capsule.classList.toggle('is-on', !entries[0].isIntersecting);
     }).observe(hero);
+    var foot = doc.querySelector('.foot__in');
+    if (foot) new IntersectionObserver(function (entries) {
+      capsule.classList.toggle('is-end', entries[0].isIntersecting);
+    }).observe(foot);
   }
 })();

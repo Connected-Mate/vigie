@@ -1,8 +1,11 @@
 VERDICT: no known vulnerability in the 1 package version(s) checked.
 
+Worth knowing (not vulnerabilities):
+- left-pad@1.3.0: deprecated by its author: use String.prototype.padStart()
+
 Sources:
 - OSV.dev (Google / OpenSSF): ok
-- EPSS (FIRST.org): ok
+- deps.dev (Google Open Source Insights): ok
 - CISA Known Exploited Vulnerabilities: ok
 - CERT-FR (ANSSI, French government): ok
 

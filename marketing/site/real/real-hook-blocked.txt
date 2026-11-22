@@ -1,9 +1,9 @@
-Vigie blocked this install: 1 package(s) with a high-priority known vulnerability.
+Vigie blocked this command: 1 package(s) it would install have a high-priority known vulnerability.
 
-VERDICT: 4 known vulnerabilities in 1 of 1 package version(s).
+VERDICT: 4 known vulnerabilities in 1 of 1 package version(s) — 1 high priority.
 
 ## [HIGH] lodash@4.17.20 (npm)
-What to do: Upgrade lodash to 4.18.0 or later (fixes 4 of 4).
+What to do: Upgrade lodash to 4.18.1, the current release (fixes 4 of 4; the first fixed version 4.18.0 still has other known vulnerabilities).
 - GHSA-35jh-r3h4-6jhm (CVE-2021-23337) · severity HIGH · fixed in 4.17.21 · exploit probability 20%
   Command Injection in lodash
   https://osv.dev/vulnerability/GHSA-35jh-r3h4-6jhm
@@ -19,10 +19,11 @@ What to do: Upgrade lodash to 4.18.0 or later (fixes 4 of 4).
 
 Sources:
 - OSV.dev (Google / OpenSSF): ok
-- CISA Known Exploited Vulnerabilities: ok
 - CERT-FR (ANSSI, French government): ok
+- deps.dev (Google Open Source Insights): ok
+- CISA Known Exploited Vulnerabilities: ok
 - EPSS (FIRST.org): ok
 
 Limits: only publicly known vulnerabilities in published packages are covered — not flaws in your own code, not misconfiguration, not undisclosed vulnerabilities.
 
-Fix these (use the "What to do" lines) or explain to the user why you cannot.
+Fix these (use the "What to do" lines) or stop and explain to the user why you cannot. Do not work around this check, and do not edit .vigieignore yourself: accepting a known risk is the user's decision.

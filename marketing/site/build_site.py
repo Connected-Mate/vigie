@@ -45,9 +45,9 @@ REAL = {p.stem.replace("real-", ""): p.read_text(encoding="utf-8").rstrip("\n") 
 UI = {
     "fr": {"skip": "Aller au contenu", "home": "accueil", "lang_nav": "Langue", "other": "English version", "other_short": "EN",
            "nav": "Sections", "n_watch": "Sources", "n_report": "Rapports", "n_limits": "Limites", "n_faq": "Questions",
-           "works": "Fonctionne avec", "slip": "Rapport de la vigie", "asked": "L'agent demande", "trees": "Les quatre arbres surveillés",
+           "works": "Fonctionne avec", "copied": "Prompt copié", "freeze": "Figer la scène", "unfreeze": "Relancer la scène", "slip": "Rapport de la vigie", "asked": "4 briques passées à", "trees": "Les quatre arbres surveillés",
            "more": "+ {n} autres failles pour cette brique dans le rapport complet", "full": "Voir le rapport complet",
-           "real": "Vraie sortie de Vigie", "tabs": "Exemples de réponses", "t_blocked": "Installation bloquée", "t_clean": "Rien à signaler",
+           "real": "Vraie sortie de Vigie", "tabs": "Exemples de réponses", "t_blocked": "Installation bloquée", "t_clean": "Rien de connu",
            "t_incomplete": "Contrôle incomplet", "t_unreachable": "Bases injoignables", "t_full": "Rapport complet",
            "c_full": "Le rapport complet du tour de guet ci-dessus : quatre briques vérifiées d'un coup, classées par urgence.",
            "sources": "Sources", "useful": "Liens utiles", "issues": "Signaler un souci", "code": "Code source", "legal": "Mentions légales",
@@ -59,9 +59,9 @@ UI = {
            "og_locale": "fr_FR"},
     "en": {"skip": "Skip to content", "home": "home", "lang_nav": "Language", "other": "Version française", "other_short": "FR",
            "nav": "Sections", "n_watch": "Sources", "n_report": "Reports", "n_limits": "Limits", "n_faq": "Questions",
-           "works": "Works with", "slip": "Lookout report", "asked": "The agent asks", "trees": "The four trees being watched",
+           "works": "Works with", "copied": "Prompt copied", "freeze": "Freeze the scene", "unfreeze": "Resume the scene", "slip": "Lookout report", "asked": "4 packages run through", "trees": "The four trees being watched",
            "more": "+ {n} more for this package in the full report", "full": "See the full report",
-           "real": "Real Vigie output", "tabs": "Sample answers", "t_blocked": "Install blocked", "t_clean": "All clear",
+           "real": "Real Vigie output", "tabs": "Sample answers", "t_blocked": "Install blocked", "t_clean": "Nothing known",
            "t_incomplete": "Incomplete check", "t_unreachable": "Databases unreachable", "t_full": "Full report",
            "c_full": "The full report from the watch above: four packages checked in one call, sorted by urgency.",
            "sources": "Sources", "useful": "Useful links", "issues": "Report a problem", "code": "Source code", "legal": "Legal notice",
@@ -76,8 +76,13 @@ LEGAL = scaffold.LEGAL_URL
 esc = lambda s: html.escape(s or "", quote=True)
 
 
+def typo(text):
+    """Typographic apostrophes in running text (never in commands, code or the prompt)."""
+    return text.replace("'", "\u2019")
+
+
 def tx(node, lang):
-    return esc(node[lang])
+    return esc(typo(node[lang]))
 
 
 # ————————————————————————————————————————————— real report → HTML (colour only, text untouched)
@@ -97,7 +102,7 @@ def report_html(text: str) -> str:
             cls = "l-do"
         elif line.strip().startswith("https://"):
             cls = "l-url"
-        elif line.startswith("Sources:") or line.startswith("Limits:") or line.startswith("Not checked"):
+        elif line.startswith(("Sources:", "Limits:", "Not checked", "Worth knowing")):
             cls = "l-meta"
         out.append(f'<span class="l {cls}">{e}\n</span>' if e else '<span class="l l-gap">\n</span>')
     return "".join(out)
@@ -108,7 +113,7 @@ def split_report(text: str):
     head, *rest = text.split("\n## ")
     sections = {}
     for block in rest:
-        block = block.split("\n\nSources:")[0]
+        block = re.split(r"\n\n(?:Worth knowing|Sources:)", block)[0]
         name = re.match(r"\[[A-Z ]+\] (\S+?)@", block).group(1)
         sections[name] = "## " + block.rstrip()
     return head.strip(), sections
@@ -150,7 +155,7 @@ def copy_button(lang, label_node, copied_node, cls="btn btn--go btn--lg"):
     icon = ('<svg class="btn__ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
             '<rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.500 4H15"/></svg>'
             '<svg class="btn__ok" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.500 4.500L19 7.500"/></svg>')
-    return (f'<button class="{cls}" type="button" data-copy="{tx(C["agent"]["prompt"], lang)}" data-copied="{tx(copied_node, lang)}">'
+    return (f'<button class="{cls}" type="button" data-copy="{esc(C["agent"]["prompt"][lang])}" data-copied="{tx(copied_node, lang)}" data-copied-short="{UI[lang]["copied"]}">'
             f'{icon}<span data-copy-label>{tx(label_node, lang)}</span></button>')
 
 
@@ -168,7 +173,7 @@ def hero(lang, prefix):
         if pid == "leftpad":
             body = REAL["clean"].split("\n\nSources:")[0]
             more = ""
-            call = "check_packages · left-pad@1.3.0"
+            call = "$ vigie check npm:left-pad@1.3.0"
         else:
             body, n = excerpt(SECTIONS[PKG_SECTION[pid]])
             more = f'<p class="slip__more">{ui["more"].format(n=n)}</p>' if n else ""
@@ -190,13 +195,14 @@ def hero(lang, prefix):
         {copy_button(lang, h["cta"], h["cta_copied"])}
         <a class="btn btn--ghost btn--lg" href="#watch">{tx(h["secondary"], lang)}</a>
       </div>
+      <p class="copy-hint" data-copy-hint aria-hidden="true"></p>
       <div class="hero__with"><span>{ui["works"]}</span>{agent_chips(lang, small=True)}</div>
       <p class="fine">{tx(C["platform"], lang)}</p>
     </div>
     <div class="slip" id="demo" aria-label="{ui["slip"]}" role="group">
       <div class="slip__head">
         <span class="slip__title">{tx(h["demo_title"], lang)}</span>
-        <span class="slip__asked">{ui["asked"]} <code>check_packages</code></span>
+        <span class="slip__asked">{ui["asked"]} <code>vigie check</code></span>
       </div>
       <pre class="term term--verdict" lang="en" aria-label="{ui["real"]}">{report_html(VERDICT)}</pre>
       {"".join(panels)}
@@ -219,6 +225,9 @@ def hero(lang, prefix):
     <button class="btn btn--quiet js-only" type="button" data-replay>
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.600-5.900"/><path d="M4 4.500V9h4.500"/></svg>
       {tx(h["replay"], lang)}</button>
+    <button class="btn btn--quiet js-only" type="button" data-freeze aria-pressed="false" data-on="{ui["unfreeze"]}" data-off="{ui["freeze"]}">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path class="ic-pause" d="M9 5v14M15 5v14"/><path class="ic-play" d="M8 5l11 7-11 7z" stroke-linejoin="round"/></svg>
+      <span data-freeze-label>{ui["freeze"]}</span></button>
   </div>
 </section>'''
 
@@ -228,6 +237,7 @@ SIGNS = {
     1: '<path d="M20 4c2 8 11 11 11 21a11 11 0 0 1-22 0c0-5 3-8 5-11 1 4 3 5 4 5 0-6 0-10 2-15z"/>',
     2: '<path d="M8 4v36"/><path d="M8 8l24 4-4 5 4 5-24 4"/>',
     3: '<rect x="7" y="5" width="26" height="32" rx="3"/><path d="M13 14h14M13 21h14M13 28h8"/>',
+    4: '<path d="M9 6h20a3 3 0 0 1 3 3v29H12a3 3 0 0 1-3-3V6z"/><path d="M9 34h23M15 6v28M21 15h6M21 22h6"/>',
 }
 
 
@@ -250,7 +260,7 @@ def sections(lang, prefix):
 
     w = C["watch"]
     items = "".join(
-        f'<li class="post" style="--i:{i}"><svg class="post__ic" viewBox="0 0 40 44" width="40" height="44" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{SIGNS[i]}</svg>'
+        f'<li class="post{" post--extra" if i == 4 else ""}" style="--i:{i}"><svg class="post__ic" viewBox="0 0 40 44" width="40" height="44" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{SIGNS[i]}</svg>'
         f'<p class="post__sign">{tx(it["sign"], lang)}</p><h3>{esc(it["name"])}</h3><p>{tx(it["text"], lang)}</p></li>'
         for i, it in enumerate(w["items"]))
     out.append(f'''<section class="wrap section" id="watch" aria-labelledby="watch-title" data-reveal>
@@ -268,16 +278,20 @@ def sections(lang, prefix):
 </section>''')
 
     r = C["report"]
-    tabs_def = [("blocked", REAL["hook-blocked"], r["captions"]["blocked"][lang]), ("clean", REAL["clean"], r["captions"]["clean"][lang]),
-                ("incomplete", REAL["incomplete"], r["captions"]["incomplete"][lang]), ("unreachable", REAL["hook-unreachable"], r["captions"]["unreachable"][lang]),
-                ("full", REAL["full-report"], ui["c_full"])]
+    cut = {"fr": "réseau coupé pour l\u2019essai", "en": "network cut for the test"}[lang]
+    tries = {"fr": "l\u2019agent tente", "en": "the agent tries"}[lang]
+    four = "vigie check npm:left-pad@1.3.0 npm:express@4.17.1 npm:lodash@4.17.20 maven:org.apache.logging.log4j:log4j-core@2.14.1"
+    tabs_def = [("blocked", REAL["hook-blocked"], "npm install lodash@4.17.20", tries), ("clean", REAL["clean"], "vigie check npm:left-pad@1.3.0", ""),
+                ("incomplete", REAL["incomplete"], "vigie check npm:lodash@4.17.20", cut), ("unreachable", REAL["hook-unreachable"], "npm install lodash@4.17.20", tries + ", " + cut),
+                ("full", REAL["full-report"], four, "")]
     tabs = "".join(f'<button role="tab" id="rt-{k}" aria-controls="rp-{k}" aria-selected="{"true" if i == 0 else "false"}" tabindex="{0 if i == 0 else -1}">{ui["t_" + k]}</button>'
-                   for i, (k, _t, _c) in enumerate(tabs_def))
+                   for i, (k, *_r) in enumerate(tabs_def))
     pans = "".join(
         f'<figure class="out" role="tabpanel" id="rp-{k}" aria-labelledby="rt-{k}"{"" if i == 0 else " data-tabhide"}>'
-        f'<figcaption><span class="out__k">{ui["t_" + k]}</span>{esc(cap)}</figcaption>'
+        f'<figcaption><span class="out__k">{ui["t_" + k]}</span>{tx(r["captions"][k], lang)}</figcaption>'
+        f'<p class="out__cmd"><code>$ {esc(cmd)}</code>{f"<span>{esc(note)}</span>" if note else ""}</p>'
         f'<pre class="term term--big" lang="en" tabindex="0" aria-label="{ui["real"]} : {ui["t_" + k]}">{report_html(text)}</pre></figure>'
-        for i, (k, text, cap) in enumerate(tabs_def))
+        for i, (k, text, cmd, note) in enumerate(tabs_def))
     out.append(f'''<section class="section section--night" id="report" aria-labelledby="report-title">
   {scene.strip_svg(3, "strip strip--top")}
   <div class="wrap" data-reveal>
@@ -291,12 +305,12 @@ def sections(lang, prefix):
 </section>''')
 
     ins = C["install"]
-    isteps = "".join(f'<li style="--i:{i}"><h3>{tx(s["title"], lang)}</h3><p>{tx(s["text"], lang)}</p></li>' for i, s in enumerate(ins["steps"]))
+    isteps = "".join(f'<li style="--i:{i}"><h3>{tx(s["title"], lang)}</h3><p>{tx(s["text"], lang)}</p><pre class="cmd"><code>{esc(s["cmd"])}</code></pre></li>' for i, s in enumerate(ins["steps"]))
     out.append(f'''<section class="wrap section" id="install" aria-labelledby="install-title" data-reveal>
   <h2 class="h2" id="install-title">{tx(ins["title"], lang)}</h2>
   <p class="section__lede">{tx(ins["lede"], lang)}</p>
   <ol class="steps">{isteps}</ol>
-  <p class="steps__more"><a class="link" href="{REPO}#install" rel="noopener">{tx(ins["manual"], lang)}</a></p>
+  <p class="steps__more"><a class="link" href="{REPO}#readme" rel="noopener">{tx(ins["manual"], lang)}</a></p>
 </section>''')
 
     lim = C["limits"]
@@ -374,7 +388,7 @@ def video_section(lang, prefix):
 
 def faq_ld(lang):
     ld = {"@context": "https://schema.org", "@type": "FAQPage", "inLanguage": lang,
-          "mainEntity": [{"@type": "Question", "name": q["q"][lang], "acceptedAnswer": {"@type": "Answer", "text": q["a"][lang]}} for q in C["faq"]]}
+          "mainEntity": [{"@type": "Question", "name": typo(q["q"][lang]), "acceptedAnswer": {"@type": "Answer", "text": typo(q["a"][lang])}} for q in C["faq"]]}
     return json.dumps(ld, ensure_ascii=False, indent=1).replace("</", "<\\/")
 
 
@@ -400,6 +414,8 @@ def page(lang):
                         '<meta name="theme-color" content="#dbe7e4" media="(prefers-color-scheme: light)">\n'
                         '<meta name="theme-color" content="#0b1420" media="(prefers-color-scheme: dark)">\n'
                         '<link rel="stylesheet"', 1)
+    head = re.sub(r"if \(!pick && /\^en/i\.test\(navigator\.language \|\| ''\)\) \{ pick = 'en'; localStorage\.setItem\('[^']+', pick\); \}",
+                  "if (!pick && navigator.language && !/^fr/i.test(navigator.language)) pick = 'en';", head)
     head = re.sub(r"<style>@media \(prefers-color-scheme: light\).*?</style>\n?", "", head, flags=re.S)
     head += f'<script type="application/ld+json">\n{faq_ld(lang)}\n</script>\n</head>'
 
@@ -499,6 +515,41 @@ def og_page(lang):
 <p class="og__s">{tx(C["badge"], lang)}</p></div></div></body></html>'''
 
 
+def ads_kit():
+    """House ads kit (scaffold) + ad groups, sitelinks, callouts and the GEO sheet from project.json."""
+    seo = SHEET.get("seo", {})
+    out = [scaffold.render_ads_kit(SHEET).rstrip(), ""]
+    if seo.get("ad_groups"):
+        out += ["## Ad groups", ""]
+        for g in seo["ad_groups"]:
+            out += [f"### {g['name']}", "", g.get("intent", ""), ""]
+            for lang in ("fr", "en"):
+                out += [f"- {lang.upper()}: " + ", ".join(g["keywords"].get(lang, []))]
+            out += [""]
+    for lang in ("fr", "en"):
+        base = scaffold.page_url(SHEET, lang)
+        if seo.get("sitelinks", {}).get(lang):
+            out += [f"## Sitelinks {lang.upper()} (text ≤ 25, lines ≤ 35)", ""]
+            out += [f"- {x['text']} | {x['desc1']} | {x['desc2']} → {base}{x['anchor']}" for x in seo["sitelinks"][lang]] + [""]
+        if seo.get("callouts", {}).get(lang):
+            out += [f"## Callouts {lang.upper()} (≤ 25)", ""] + [f"- {x}" for x in seo["callouts"][lang]] + [""]
+    geo = seo.get("geo") or {}
+    if geo:
+        out += ["## GEO: what an AI assistant should be able to quote", ""]
+        for lang in ("fr", "en"):
+            out += [f"### {lang.upper()}", "", geo["one_line_definition"][lang], ""] + [f"- {x}" for x in geo["key_facts"][lang]] + [""]
+            out += ["Questions the page answers:", ""] + [f"- {x}" for x in geo["questions_people_ask"][lang]] + [""]
+        out += ["`docs/llms.txt` carries the same facts for crawlers that read it.", ""]
+    if seo.get("keyword_research_notes"):
+        notes = seo["keyword_research_notes"]
+        out += ["## Research notes (what was and was not verified)", "", notes if isinstance(notes, str) else json.dumps(notes, ensure_ascii=False, indent=1), ""]
+    out += ["## Before spending anything", "",
+            "- Nothing is launched. An ads account, a budget and the go belong to the owner.",
+            "- Search volumes and costs per click were not measured (no Keyword Planner access): start small and read the search-terms report.",
+            "- Every claim above is true on the landing page only while the page matches the tool: re-run `python3 marketing/site/build_site.py` after a product change.", ""]
+    return "\n".join(out)
+
+
 def main():
     DOCS.mkdir(exist_ok=True)
     other = "en" if SHEET["default_lang"] == "fr" else "fr"
@@ -515,6 +566,7 @@ def main():
     llms = SHEET.get("seo", {}).get("llms_txt")
     if llms:
         (DOCS / "llms.txt").write_text(llms.rstrip() + "\n", encoding="utf-8")
+    (ROOT / "marketing" / "ADS-KIT.md").write_text(ads_kit(), encoding="utf-8")
     build = HERE / "_build"
     build.mkdir(exist_ok=True)
     for lang in ("fr", "en"):

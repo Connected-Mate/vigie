@@ -11,14 +11,14 @@ import math
 import random
 
 W, H = 1600, 560
-TOWER_X, TOWER_GROUND = 780, 318
+TOWER_X, TOWER_GROUND = 846, 318
 
 # id, label, x, base y, height, width, state
 PACKAGES = [
     ("leftpad", "left-pad", "1.3.0", 470, 506, 196, 112, "clear"),
     ("express", "express", "4.17.1", 660, 512, 222, 122, "wisp"),
-    ("lodash", "lodash", "4.17.20", 900, 510, 238, 128, "smoke"),
-    ("log4j", "log4j-core", "2.14.1", 1092, 504, 214, 120, "fire"),
+    ("lodash", "lodash", "4.17.20", 936, 510, 238, 128, "smoke"),
+    ("log4j", "log4j-core", "2.14.1", 1118, 504, 214, 120, "fire"),
 ]
 
 
@@ -182,8 +182,8 @@ def scene_svg(alt: str) -> str:
 </defs>
 <g class="stars" aria-hidden="true">{stars}</g>
 <g class="lay" data-depth=".04"><g class="lay__in" style="--i:0">
-  <circle class="sun-halo" cx="585" cy="206" r="170" fill="url(#sunHalo)"/>
-  <circle class="c-sun" cx="585" cy="206" r="40"/>
+  <circle class="sun-halo" cx="585" cy="246" r="150" fill="url(#sunHalo)"/>
+  <circle class="c-sun" cx="585" cy="246" r="38"/>
 </g></g>
 <g class="lay" data-depth=".08"><g class="lay__in" style="--i:1">
   <path class="c-r1" d="{ridge_path(far1)}"/>
@@ -206,7 +206,7 @@ def scene_svg(alt: str) -> str:
 <rect class="mist mist--c" x="-200" y="392" width="2000" height="90" fill="url(#mist)"/>
 <g class="lay" data-depth=".3"><g class="lay__in" style="--i:5">
   <path class="c-ground" d="{ridge_path(near)}"/>
-  <path class="c-ground" d="{treeline(24, near, 34, 62, 22, 44, skip=((400, 1160),))}"/>
+  <path class="c-ground" d="{treeline(24, near, 34, 62, 22, 44, skip=((400, 1185),))}"/>
   <line class="gaze" x1="{ex}" y1="{ey}" x2="{ex}" y2="{ey}"/>
   <circle class="reticle" cx="{ex}" cy="{ey}" r="15"/>
   {"".join(pk)}
