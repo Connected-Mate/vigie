@@ -8,10 +8,10 @@
 
 ## 0. What Vigie is
 
-Vigie is a lookout for known vulnerabilities. It gives you (the agent) five tools to check package versions against public databases (OSV.dev, CISA KEV, EPSS, CERT-FR, deps.dev), and a hook that stops you before you install a package with a serious known vulnerability, then checks the project after each install.
+Vigie is a lookout for known vulnerabilities. It gives you (the agent) five tools to check package versions against public databases (OSV.dev, CISA KEV, EPSS, CERT-FR; plus deps.dev for release signals when single packages are checked or installed), and a hook that stops you before you install a package with a serious known vulnerability, then checks the project after each install.
 
 What it changes on the machine:
-- one folder with Vigie's code (`~/.vigie` by default, about 150 kB, no dependency to install);
+- one folder with Vigie's code (`~/.vigie` by default, well under 1 MB, no dependency to install);
 - in the project you are in: an MCP server entry, a hook entry and a short rule block in the agent's instruction file. Nothing else in the project is touched, and its code is never modified;
 - a cache of public vulnerability data in `~/.cache/vigie`.
 
@@ -37,6 +37,8 @@ node "$VIGIE_HOME/bin/vigie.mjs" --version
 
 Expected: a version number such as `1.0.0`. There is nothing to `npm install`.
 
+`VIGIE_HOME` is a plain shell variable: if your shell does not keep variables between commands, set it again at the start of each command below, or write the full path instead.
+
 ## 3. Configure
 
 **First look at the folder you are working in.** Run:
@@ -44,6 +46,8 @@ Expected: a version number such as `1.0.0`. There is nothing to `npm install`.
 ```sh
 node "$VIGIE_HOME/bin/vigie.mjs" check . ; echo "exit=$?"
 ```
+
+Exit code of `check`: `0` = nothing serious, `1` = serious findings (this is a result, not a failed step), `2` = the check could not be completed.
 
 - **Path A — the folder is a project with dependency files** (the report starts with `Project:` and lists files such as `package-lock.json`, `requirements.txt`, `uv.lock`, `Cargo.lock`, `go.mod`…): install Vigie on top of it, without changing its code, then show the person their own project's report (step 4).
 - **Path B — no dependency file** (the report says `No dependency file found` and `VERDICT: INCOMPLETE — nothing to check in this folder`): tell the person plainly that this folder has no project Vigie can check, and offer two things: a demonstration check (step 4, path B), and installing Vigie for all their projects (`--user` below) so it is ready when they open one. Do not create a project they did not ask for.
@@ -60,9 +64,9 @@ node "$VIGIE_HOME/bin/vigie.mjs" setup claude --user     # or: all projects (the
 It writes, without touching anything else already there:
 - `.mcp.json` → the `vigie` MCP server (`node …/src/server.mjs`);
 - `.claude/settings.json` → the hook, before `Bash` and after `Bash|Edit|Write|MultiEdit`;
-- `CLAUDE.md` → a 4-line rule block between `<!-- vigie:start -->` and `<!-- vigie:end -->`.
+- `CLAUDE.md` → a short rule block (a heading and four rules) between `<!-- vigie:start -->` and `<!-- vigie:end -->`.
 
-Tell the person to restart Claude Code in this folder and accept the "new MCP server" question once.
+Tell the person to restart Claude Code in this folder and accept the "new MCP server" question once. `claude mcp list`, run from the project folder, must then show `vigie`.
 
 ### Gemini CLI and Cursor (configuration format checked against their documentation on 2026-11-22; not run inside these agents)
 
@@ -120,6 +124,7 @@ The server is `node /absolute/path/to/.vigie/src/server.mjs` (stdio, no environm
 ### Optional settings (only if the person asks)
 
 - `VIGIE_STRICT=1` in the hook's environment: block installs when the databases cannot be reached (default: let them through and say so).
+- `VIGIE_CACHE_DIR`: another folder for the cache. It must be set in the environment the agent starts the hook and the server with (for example the `env` block of the agent's settings); setting it only while running `setup` is not enough.
 - `.vigieignore` in a project: one advisory id (`GHSA-…`, `CVE-…`) or `name@version` per line, for a risk the person has decided to accept. Accepted entries stay listed in every report. Never add one yourself.
 
 ## 4. Prove it works
@@ -141,7 +146,7 @@ The server is `node /absolute/path/to/.vigie/src/server.mjs` (stdio, no environm
    Expected: `vigie`, then the five tools `check_packages`, `check_project`, `check_technologies`, `vulnerability_details`, `list_sources`.
 
 3. **The report.**
-   - Path A: run `node "$VIGIE_HOME/bin/vigie.mjs" check .` and show the person the verdict line of their own project, the packages marked `[ACT NOW]` or `[HIGH]` with their "What to do" line, and offer to apply the fixes. Exit code 0 = nothing serious, 1 = serious findings, 2 = the check could not be completed.
+   - Path A: run `node "$VIGIE_HOME/bin/vigie.mjs" check .` and show the person the verdict line of their own project, the packages marked `[ACT NOW]` or `[HIGH]` with their "What to do" line, and offer to apply the fixes (do not change their dependency files without their yes). The labels are priorities for action, not raw severities: `[ACT NOW]` = exploited in real attacks, malicious package or open CERT-FR alert; `[HIGH]` = critical or high severity, or a high exploit probability; then `[MEDIUM]` and `[LOW]`.
    - Path B: run `node "$VIGIE_HOME/bin/vigie.mjs" check npm:lodash@4.17.20` as a demonstration. Expected: `VERDICT: 4 known vulnerabilities in 1 of 1 package version(s)` (the count can grow over time) and a `What to do: Upgrade lodash to …` line.
 
 Report to the person in one or two plain sentences: what is installed and where, that their agent will now be stopped before installing a package with a serious known vulnerability, what the check of their project found, and how to remove it (step 5). Say clearly that Vigie only knows publicly disclosed vulnerabilities in published packages: it does not review their own code.
@@ -153,13 +158,13 @@ node "$VIGIE_HOME/bin/vigie.mjs" setup claude --remove          # in each projec
 node "$VIGIE_HOME/bin/vigie.mjs" setup claude --user --remove   # if it was set up for all projects; then: claude mcp remove --scope user vigie
 ```
 
-Then, after asking the person (these delete folders): remove `~/.vigie` (the code) and `~/.cache/vigie` (the cache). For agents configured by hand, remove the `vigie` entries and the rule block you added.
+Then, after asking the person (these delete folders): remove `~/.vigie` (the code, or the folder `VIGIE_HOME` pointed to) and `~/.cache/vigie` (the cache, or the folder `VIGIE_CACHE_DIR` pointed to). For agents configured by hand, remove the `vigie` entries and the rule block you added.
 
 ## Troubleshooting
 
 - **`VERDICT: INCOMPLETE`** → a database could not be reached, or the folder has no dependency file. The "Sources" lines of the report name what failed. Check the network, then run again. Never tell the person the project is safe on an incomplete verdict.
 - **`Vigie could not check … Not blocked`** shown by the hook → same cause; the install went through unverified. Run `check_project` once the network is back.
-- **Claude Code does not show the Vigie tools** → restart it in the project folder and accept the project MCP server; `claude mcp list` must show `vigie`.
+- **Claude Code does not show the Vigie tools** → restart it in the project folder and accept the project MCP server; `claude mcp list`, run from that folder, must show `vigie`.
 - **`… is not valid JSON: fix or move it first`** during setup → an existing settings file is broken. Vigie never overwrites it: show the person, fix the file with them, run setup again.
 - **The hook blocks a package the person really wants** → explain the finding to them. If they accept the risk, they add the advisory id to `.vigieignore` themselves (or tell you explicitly to do it).
 - **Company proxy or offline machine** → Vigie needs `api.osv.dev`, `www.cisa.gov`, `api.first.org`, `www.cert.ssi.gouv.fr`, `api.deps.dev`, and for installs `registry.npmjs.org` / `pypi.org`.

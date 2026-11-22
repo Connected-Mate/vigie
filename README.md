@@ -57,7 +57,7 @@ Priorities: **ACT NOW** (exploited in real attacks, malicious package, or open C
 | [CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) | Whether a vulnerability is exploited in real attacks. |
 | [EPSS](https://www.first.org/epss/) (FIRST.org) | Probability that a vulnerability gets exploited soon. |
 | [CERT-FR](https://www.cert.ssi.gouv.fr) (ANSSI, French government) | Latest French government alerts and advisories. |
-| [deps.dev](https://deps.dev) (Google Open Source Insights) | Not vulnerabilities, signals: a version deprecated by its author, a version published in the last 3 days, and the packages an install pulls in. |
+| [deps.dev](https://deps.dev) (Google Open Source Insights) | Not vulnerabilities, signals: a version deprecated by its author, a version published in the last 3 days, and the packages an install pulls in. Asked when single packages are checked or installed (up to 40 at a time), not for whole-project scans. |
 
 Adding a source is one file in `src/providers/`. Looked at and left out: the GitHub Advisory API without a key (60 requests an hour, and its advisories are already in OSV), NVD without a key (5 requests per 30 seconds, and OSV already carries the severity), and the npm / PyPI registries as vulnerability sources (deps.dev gives the same signals for seven ecosystems in one place; the registries are only asked which version an install would bring).
 
