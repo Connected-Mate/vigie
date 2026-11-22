@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Vigie film</title>
+<style>
+  :root { --cream: #fff3df; --ember: #ff6a2b; --night: #0c1f1e; --ok: #8fe0a8; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: #000; overflow: hidden; }
+  #stage { position: relative; overflow: hidden; background: var(--night); }
+  #world { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .serif { font-family: "Iowan Old Style", Palatino, Georgia, serif; }
+  .mono { font-family: Menlo, "SF Mono", Monaco, monospace; }
+  #band { position: absolute; left: 0; right: 0; bottom: 0; height: 38%; background: linear-gradient(to top, rgba(6,18,18,.88), rgba(6,18,18,.5) 45%, rgba(6,18,18,0)); }
+  #dim { position: absolute; inset: 0; background: #06100f; opacity: 0; }
+  .cap { position: absolute; left: 8%; right: 8%; bottom: 7.5%; text-align: center; color: var(--cream); font-size: 64px; line-height: 1.18; letter-spacing: -.01em; text-wrap: balance; text-shadow: 0 2px 18px rgba(0,0,0,.55); opacity: 0; }
+  .v .cap { font-size: 68px; left: 7%; right: 7%; bottom: 6%; }
+  #panel { position: absolute; left: 50%; top: 70px; width: 1620px; transform: translateX(-50%); background: #0b1716; border: 1px solid rgba(255,243,223,.16); border-radius: 18px; box-shadow: 0 40px 120px rgba(0,0,0,.6); color: #d9e2dc; opacity: 0; overflow: hidden; }
+  .v #panel { width: 1000px; top: 190px; }
+  #panel header { display: flex; align-items: center; gap: 14px; padding: 18px 28px; border-bottom: 1px solid rgba(255,243,223,.1); font-size: 22px; color: rgba(255,243,223,.72); letter-spacing: .04em; text-transform: uppercase; font-family: "Avenir Next", "Helvetica Neue", sans-serif; font-weight: 600; }
+  #panel header i { width: 12px; height: 12px; border-radius: 50%; background: var(--ember); box-shadow: 0 0 14px var(--ember); }
+  #lines { padding: 26px 30px 30px; font-size: 25px; line-height: 1.52; }
+  .v #lines { font-size: 28px; padding: 26px 26px 30px; }
+  .ln { white-space: pre-wrap; overflow-wrap: anywhere; opacity: 0; padding: 0 10px; margin: 0 -10px; border-radius: 8px; }
+  .v .ln { padding-left: 2ch; text-indent: -2ch; margin-left: 0; }
+  .gap { height: .76em; }
+  .cmd { color: var(--cream); } .cmd b { color: var(--ok); font-weight: 400; }
+  .block { color: #ff8a55; font-weight: 700; }
+  .strong { color: var(--cream); font-weight: 700; }
+  .high { color: #ffb26b; font-weight: 700; }
+  .todo { color: var(--cream); font-weight: 700; }
+  .dim { color: #8a9a94; }
+  .ok { color: #c9d6cf; } .ok b { color: var(--ok); font-weight: 700; }
+  #end { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--cream); opacity: 0; padding: 0 7%; }
+  #end h1 { font-size: 230px; font-weight: 700; letter-spacing: -.03em; line-height: 1; text-shadow: 0 6px 40px rgba(0,0,0,.45); }
+  #end .pr { font-size: 58px; margin-top: 26px; line-height: 1.2; text-wrap: balance; text-shadow: 0 2px 18px rgba(0,0,0,.5); }
+  #end .tags { display: flex; gap: 18px; margin-top: 46px; flex-wrap: wrap; justify-content: center; font-family: "Avenir Next", "Helvetica Neue", sans-serif; font-weight: 600; font-size: 34px; }
+  #end .tags span { padding: 12px 28px; border-radius: 999px; background: rgba(255,243,223,.94); color: #12302b; }
+  #end .src { margin-top: 40px; font-size: 30px; color: rgba(255,243,223,.92); }
+  #end .lim { margin-top: 16px; font-family: "Avenir Next", "Helvetica Neue", sans-serif; font-size: 26px; color: rgba(255,243,223,.78); }
+  .v #end h1 { font-size: 250px; } .v #end .pr { font-size: 64px; } .v #end .tags { flex-direction: column; align-items: center; font-size: 40px; } .v #end .src { font-size: 34px; } .v #end .lim { font-size: 30px; }
+  .chip { font-family: Menlo, monospace; }
+</style>
+<div id="stage">
+  <svg id="world" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div id="band"></div>
+  <div id="dim"></div>
+  <div id="caps"></div>
+  <div id="panel"><header><i></i><span id="ptitle"></span></header><div id="lines" class="mono"></div></div>
+  <div id="end" class="serif"><h1></h1><p class="pr"></p><div class="tags"></div><p class="src mono"></p><p class="lim"></p></div>
+</div>
+<script src="copy.js"></script>
+<script>
+const Q = new URLSearchParams(location.search)
+const LANG = Q.get('lang') === 'fr' ? 'fr' : 'en'
+const V = Q.get('format') === '9x16'
+const W = V ? 1080 : 1920, H = V ? 1920 : 1080
+document.documentElement.lang = LANG
+const stage = document.getElementById('stage')
+stage.style.width = W + 'px'; stage.style.height = H + 'px'
+if (V) stage.classList.add('v')
+const C = window.COPY
+
+// ---- helpers (everything is a pure function of t: any frame can be rendered alone)
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+const lin = (t, a, b) => clamp((t - a) / (b - a))
+const outQuint = (x) => 1 - Math.pow(1 - x, 5)
+const inOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2
+const back = (x) => { const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2) }
+const mix = (a, b, x) => a + (b - a) * x
+const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16))
+const col = (a, b, x) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(mix(v, B[i], x))).join(',')})` }
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 } }
+const NS = 'http://www.w3.org/2000/svg'
+const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e }
+const world = document.getElementById('world')
+
+// ---- the forest
+const ridge = (base, amp, f1, f2, ph) => (x) => base + amp * Math.sin(x / f1 + ph) + amp * .45 * Math.sin(x / f2 + ph * 2.3)
+const pine = (x, y, h, w = h * .46) => {
+  // three stacked tiers and a small trunk, base centred on (x, y)
+  let d = ''
+  for (let i = 0; i < 3; i++) { const top = y - h + i * h * .22, bot = y - h * .12 + (i - 2) * h * .2, ww = w * (.52 + i * .24); d += `M${x} ${top}L${x + ww / 2} ${bot}L${x - ww / 2} ${bot}Z` }
+  return d + `M${x - w * .06} ${y - h * .13}h${w * .12}V${y}h${-w * .12}Z`
+}
+const defs = el('defs', {}, world)
+defs.innerHTML = `
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop id="s0" offset="0"/><stop id="s1" offset=".5"/><stop id="s2" offset=".78"/></linearGradient>
+  <radialGradient id="glow"><stop offset="0" stop-color="#fff1c9" stop-opacity=".95"/><stop offset=".35" stop-color="#ffc98a" stop-opacity=".45"/><stop offset="1" stop-color="#ffb070" stop-opacity="0"/></radialGradient>
+  <linearGradient id="beamg" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fff0b8" stop-opacity=".85"/><stop offset="1" stop-color="#fff0b8" stop-opacity=".08"/></linearGradient>
+  <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>
+  <filter id="soft2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>`
+const sky = el('rect', { x: -400, y: -1400, width: 2720, height: 2480, fill: 'url(#sky)' }, world)
+const sun = el('g', {}, world)
+el('circle', { r: 330, fill: 'url(#glow)' }, sun)
+const sunDisc = el('circle', { r: 46, fill: '#fff4d6' }, sun)
+
+const LAYERS = [
+  { f: ridge(575, 26, 210, 83, .4), dawn: '#6f8f96', day: '#9dbdb4', trees: [70, 30, 44, 1] },
+  { f: ridge(650, 30, 260, 97, 2.1), dawn: '#45686c', day: '#6c9c8d', trees: [60, 44, 62, 2] },
+  { f: ridge(760, 34, 300, 120, 4.0), dawn: '#274a4b', day: '#3f7566', trees: [46, 70, 100, 3] },
+  { f: ridge(900, 22, 380, 140, 1.2), dawn: '#12302f', day: '#1f4a40', trees: [0, 0, 0, 4] },
+]
+const TOWER_X = 1130, SMOKE_X = 770
+// a knoll under the tower on the second ridge
+const f1 = LAYERS[1].f; LAYERS[1].f = (x) => f1(x) - 42 * Math.exp(-Math.pow((x - TOWER_X) / 110, 2))
+const layerEls = []
+let smokeG, beam, towerG
+LAYERS.forEach((L, li) => {
+  if (li === 1) { // smoke lives between the far ridge and the tower ridge; beam too
+    smokeG = el('g', { filter: 'url(#soft)' }, world)
+    beam = el('polygon', { fill: 'url(#beamg)', opacity: 0, filter: 'url(#soft2)' }, world)
+  }
+  let d = `M-400 1100`
+  for (let x = -400; x <= 2320; x += 16) d += `L${x} ${L.f(x).toFixed(1)}`
+  d += 'L2320 1100Z'
+  const r = rng(li * 97 + 5)
+  const [n, hMin, hMax] = L.trees
+  for (let i = 0; i < n; i++) {
+    const x = -380 + (2700 * (i + r() * .8)) / n
+    if (li === 1 && Math.abs(x - TOWER_X) < 70) continue
+    d += pine(x, L.f(x) + 6, mix(hMin, hMax, r()))
+  }
+  const p = el('path', { d }, world)
+  layerEls.push(p)
+  if (li === 1) towerG = el('g', {}, world)
+})
+// lookout tower (drawn on the second ridge)
+const TY = LAYERS[1].f(TOWER_X) + 4, CAB = TY - 168
+towerG.innerHTML = `
+  <g id="tw" stroke-linecap="round">
+    <path d="M${TOWER_X - 46} ${TY}L${TOWER_X - 26} ${CAB + 44}M${TOWER_X + 46} ${TY}L${TOWER_X + 26} ${CAB + 44}M${TOWER_X - 46} ${TY}L${TOWER_X + 31} ${TY - 62}M${TOWER_X + 46} ${TY}L${TOWER_X - 31} ${TY - 62}M${TOWER_X - 31} ${TY - 62}L${TOWER_X + 27} ${CAB + 44}M${TOWER_X + 31} ${TY - 62}L${TOWER_X - 27} ${CAB + 44}M${TOWER_X - 31} ${TY - 62}H${TOWER_X + 31}" fill="none" stroke-width="5"/>
+    <path d="M${TOWER_X - 52} ${CAB + 44}h104v6h-104z" stroke="none"/>
+    <path d="M${TOWER_X - 40} ${CAB + 44}V${CAB}h80V${CAB + 44}z" stroke="none"/>
+    <path d="M${TOWER_X - 58} ${CAB + 2}L${TOWER_X} ${CAB - 34}L${TOWER_X + 58} ${CAB + 2}z" stroke="none"/>
+    <path d="M${TOWER_X - 52} ${CAB + 44}v-18M${TOWER_X + 52} ${CAB + 44}v-18M${TOWER_X - 52} ${CAB + 27}h104" fill="none" stroke-width="3"/>
+  </g>
+  <rect id="win" x="${TOWER_X - 30}" y="${CAB + 10}" width="60" height="22" rx="2"/>`
+const tw = towerG.querySelector('#tw'), win = towerG.querySelector('#win')
+
+// foreground: a few trees that are already there, then the planted ones
+const FG = LAYERS[3].f
+const old = el('path', { d: [[-250, 260], [-120, 330], [40, 250], [200, 300], [330, 220], [1590, 230], [1720, 310], [1870, 260], [2010, 330], [2160, 270]].map(([x, h]) => pine(x, FG(x) + 30, h)).join('') }, world)
+const SPOTS = [[690, 176], [1255, 190], [820, 150], [1120, 164], [605, 205], [1345, 172], [900, 188], [1040, 148]].map(([x, h], i) => ({ x: V ? 960 + (x - 960) * .5 : x, h, y: FG(x) + 34 + (i % 3) * 14, t: 6.0 + i * .56 }))
+const LOD = { x: 968, h: 214, y: FG(968) + 62 }
+const planted = SPOTS.map((s) => el('path', { d: pine(0, 0, s.h) }, world))
+const ghost = el('path', { d: pine(0, 0, LOD.h), fill: 'none', stroke: '#fff3df', 'stroke-width': 2.5, 'stroke-dasharray': '7 9', opacity: 0, transform: `translate(${LOD.x} ${LOD.y})` }, world)
+const lodTree = el('path', { d: pine(0, 0, LOD.h) }, world)
+const front = el('path', { d: (() => { let d = 'M-400 1100'; for (let x = -400; x <= 2320; x += 20) d += `L${x} ${(1010 + 16 * Math.sin(x / 170 + 1)).toFixed(1)}`; return d + 'L2320 1100Z' })() }, world)
+// agents: two small lights that travel from one planting spot to the next
+const agents = [0, 1].map(() => { const g = el('g', {}, world); el('circle', { r: 26, fill: '#fff3df', opacity: .22, filter: 'url(#soft2)' }, g); el('circle', { r: 8, fill: '#fff3df' }, g); return g })
+// chips: package names
+const chip = (text) => {
+  const g = el('g', { class: 'chip', opacity: 0 }, world)
+  const w = text.length * 15.7 + 36
+  el('rect', { x: -w / 2, y: -22, width: w, height: 44, rx: 22, fill: '#0b1716', 'fill-opacity': .86, stroke: '#fff3df', 'stroke-opacity': .25 }, g)
+  const tx = el('text', { x: 0, y: 9, 'text-anchor': 'middle', 'font-size': 26, fill: '#fff3df' }, g); tx.textContent = text
+  return g
+}
+const chips = SPOTS.map((s, i) => chip('+ ' + C.packages[i]))
+const riskChip = chip(C.risky), fixChip = chip(C.fixed + '  ✓')
+riskChip.querySelector('rect').setAttribute('stroke', '#ff6a2b'); riskChip.querySelector('rect').setAttribute('stroke-opacity', .9)
+fixChip.querySelector('rect').setAttribute('stroke', '#8fe0a8'); fixChip.querySelector('rect').setAttribute('stroke-opacity', .9)
+// smoke puffs
+const PUFFS = 16, puffs = []
+{ const r = rng(42); for (let i = 0; i < PUFFS; i++) puffs.push({ e: el('circle', { fill: '#4c4750' }, smokeG), ph: i / PUFFS, wob: r() * 6.28, amp: 6 + r() * 10 }) }
+const emberDot = el('circle', { cx: SMOKE_X, cy: LAYERS[0].f(SMOKE_X) + 2, r: 5, fill: '#ff6a2b', opacity: 0, filter: 'url(#soft2)' }, world)
+world.insertBefore(emberDot, layerEls[1])
+
+// ---- text layers
+const caps = document.getElementById('caps')
+const capEls = C.beats.map((b) => { const p = document.createElement('p'); p.className = 'cap serif'; p.textContent = b[LANG]; caps.appendChild(p); return p })
+document.getElementById('ptitle').textContent = C.panelTitle[LANG]
+const linesEl = document.getElementById('lines')
+const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+const lineEls = C.report.map((l) => {
+  const d = document.createElement('div')
+  if (l.k === 'gap') { d.className = 'gap'; linesEl.appendChild(d); return d }
+  d.className = 'ln ' + l.k
+  if (l.k === 'cmd') d.innerHTML = '<b>$</b> <span></span>'
+  else if (l.k === 'ok') d.innerHTML = esc(l.s).replace(/: ok$/, ': <b>ok</b>')
+  else d.textContent = V && l.wide ? l.s.trim() : l.s
+  linesEl.appendChild(d); return d
+})
+const endEl = document.getElementById('end')
+endEl.querySelector('h1').textContent = C.end.name
+endEl.querySelector('.pr').textContent = C.end.promise[LANG]
+endEl.querySelector('.tags').innerHTML = C.end.tags[LANG].map((t) => `<span>${t}</span>`).join('')
+endEl.querySelector('.src').textContent = C.end.sources
+endEl.querySelector('.lim').textContent = C.end.limit[LANG]
+const panel = document.getElementById('panel'), dim = document.getElementById('dim'), band = document.getElementById('band')
+const s0 = document.getElementById('s0'), s1 = document.getElementById('s1'), s2 = document.getElementById('s2')
+
+// ---- the film
+window.__DURATION = C.duration
+window.__render = (t) => {
+  // light: dawn at 0, morning at the end
+  const day = inOut(lin(t, 2, 44))
+  s0.setAttribute('stop-color', col('#17324a', '#5fa3c4', day))
+  s1.setAttribute('stop-color', col('#b9716a', '#bfdfe0', day))
+  s2.setAttribute('stop-color', col('#f6b77c', '#fbeacb', day))
+  const sy = mix(585, 400, day), sx = 1010 + 40 * day
+  sun.setAttribute('transform', `translate(${sx} ${sy})`)
+  sunDisc.setAttribute('fill', col('#ffd9a0', '#fffbe9', day))
+  LAYERS.forEach((L, i) => layerEls[i].setAttribute('fill', col(L.dawn, L.day, day)))
+  tw.setAttribute('fill', col('#1c3a3c', '#2b5a50', day)); tw.setAttribute('stroke', col('#1c3a3c', '#2b5a50', day))
+  const fg = col('#0b2423', '#16392f', day)
+  old.setAttribute('fill', fg); front.setAttribute('fill', col('#071a19', '#0f2b24', day))
+  // slow push-in on the whole world
+  const z = 1 + .05 * lin(t, 0, C.duration)
+  world.style.transform = `scale(${z})`; world.style.transformOrigin = '50% 62%'
+
+  // planting
+  SPOTS.forEach((s, i) => {
+    const g = back(lin(t, s.t, s.t + .7)), on = t >= s.t
+    planted[i].setAttribute('transform', `translate(${s.x} ${s.y}) scale(${on ? g : 0})`)
+    planted[i].setAttribute('fill', col(i % 2 ? '#1d4a44' : '#18403c', i % 2 ? '#2b6a50' : '#245c46', day))
+    const a = lin(t, s.t, s.t + .25) * (1 - lin(t, s.t + 1.5, s.t + 2.1))
+    chips[i].setAttribute('opacity', a)
+    chips[i].setAttribute('transform', `translate(${s.x} ${s.y - s.h - 34 - 26 * outQuint(lin(t, s.t, s.t + 2.1))})`)
+  })
+  // agents hop between their spots, then one of them brings lodash
+  agents.forEach((g, k) => {
+    const mine = SPOTS.filter((_, i) => i % 2 === k)
+    let x = k ? 1500 : 420, y = FG(x) + 20
+    mine.forEach((s) => { const m = outQuint(lin(t, s.t - .5, s.t)); x = mix(x, s.x, m); y = mix(y, s.y - 4, m) })
+    if (k === 0) { const m = inOut(lin(t, 18.6, 20)); x = mix(x, LOD.x, m); y = mix(y, LOD.y - 4, m) }
+    else { const m = inOut(lin(t, 12, 14)); x = mix(x, 1420, m); y = mix(y, FG(1420) + 40, m) }
+    const hop = Math.abs(Math.sin(t * 5 + k * 1.7)) * 7
+    g.setAttribute('transform', `translate(${x} ${y - 16 - hop})`)
+    g.setAttribute('opacity', lin(t, 5, 5.6) * (1 - lin(t, 40, 41)))
+  })
+  // the risky install
+  const risk = lin(t, 19.6, 20.2) * (1 - lin(t, 35.0, 35.5))
+  ghost.setAttribute('opacity', risk * .8)
+  riskChip.setAttribute('opacity', risk); riskChip.setAttribute('transform', `translate(${LOD.x} ${LOD.y - LOD.h - 44})`)
+  const fixT = 35.6
+  lodTree.setAttribute('transform', `translate(${LOD.x} ${LOD.y}) scale(${t >= fixT ? back(lin(t, fixT, fixT + .8)) : 0})`)
+  lodTree.setAttribute('fill', col('#18403c', '#2b6a50', day))
+  fixChip.setAttribute('opacity', lin(t, fixT, fixT + .3) * (1 - lin(t, 39.6, 40.2)))
+  fixChip.setAttribute('transform', `translate(${LOD.x} ${LOD.y - LOD.h - 44})`)
+
+  // smoke: thin, far, from 11.5 s
+  const grow = lin(t, 11.5, 15), far = 1 - .35 * lin(t, 36, 42)
+  const baseY = LAYERS[0].f(SMOKE_X) + 4
+  puffs.forEach((p) => {
+    const life = ((t * .17 + p.ph) % 1 + 1) % 1
+    const rise = life * 190 * mix(.5, 1, grow)
+    p.e.setAttribute('cx', SMOKE_X + life * life * 55 + Math.sin(p.wob + life * 5) * p.amp * life)
+    p.e.setAttribute('cy', baseY - rise)
+    p.e.setAttribute('r', 4 + life * 19)
+    p.e.setAttribute('opacity', grow * far * .62 * Math.sin(Math.PI * Math.min(1, life * 1.15)) * (1 - life * .45))
+  })
+  emberDot.setAttribute('opacity', grow * (.65 + .35 * Math.sin(t * 7)))
+  // tower: window lights up, beam swings onto the smoke
+  const awake = lin(t, 16.4, 17.2)
+  win.setAttribute('fill', col('#f0a45c', '#fff0b8', awake)); win.setAttribute('opacity', mix(.55, 1, awake))
+  const sw = inOut(lin(t, 16.8, 18.6))
+  const ox = TOWER_X - 30, oy = CAB + 21
+  const tx = SMOKE_X + 40, ty = baseY - 95
+  const ang = mix(Math.atan2(-140, -80), Math.atan2(ty - oy, tx - ox), sw) + Math.sin(t * .9) * .008
+  const len = Math.hypot(tx - ox, ty - oy) + 70, spread = .1
+  const pt = (a, l) => `${(ox + Math.cos(a) * l).toFixed(1)},${(oy + Math.sin(a) * l).toFixed(1)}`
+  beam.setAttribute('points', `${ox},${oy - 6} ${pt(ang - spread, len)} ${pt(ang + spread, len)} ${ox},${oy + 6}`)
+  beam.setAttribute('opacity', awake * mix(.75, .4, lin(t, 36, 42)))
+
+  // captions
+  C.beats.forEach((b, i) => {
+    const a = lin(t, b.from, b.from + .5) * (1 - lin(t, b.to - .4, b.to))
+    capEls[i].style.opacity = a
+    capEls[i].style.transform = `translateY(${(1 - outQuint(lin(t, b.from, b.from + .7))) * 16}px)`
+  })
+  // report panel
+  const pIn = outQuint(lin(t, 21.4, 22.1)), pOut = lin(t, 34.2, 34.8), pa = pIn * (1 - pOut)
+  panel.style.opacity = pa
+  panel.style.transform = `translateX(-50%) translateY(${(1 - pIn) * 30 - pOut * 20}px)`
+  const e = C.end, ea = lin(t, e.from, e.from + .8)
+  dim.style.opacity = Math.max(pa * .62, ea * .46)
+  world.style.filter = ea > 0 ? `blur(${(ea * 7).toFixed(2)}px)` : 'none'
+  band.style.opacity = 1 - ea
+  C.report.forEach((l, i) => {
+    if (l.k === 'gap') return
+    lineEls[i].style.opacity = lin(t, l.t, l.t + .3)
+    if (l.k === 'cmd') { const n = Math.round(lin(t, l.t + .1, l.t + 1.1) * l.s.length); lineEls[i].lastChild.textContent = l.s.slice(0, n) + (n < l.s.length ? '▌' : '') }
+    if (l.k === 'todo') { const h = lin(t, 30.4, 31); lineEls[i].style.background = `rgba(255,106,43,${.3 * h})`; lineEls[i].style.boxShadow = `inset 4px 0 0 rgba(255,106,43,${h})` }
+  })
+  // end card
+  endEl.style.opacity = ea
+  const kids = endEl.children
+  for (let i = 0; i < kids.length; i++) {
+    const k = lin(t, e.from + .2 + i * .35, e.from + 1 + i * .35)
+    kids[i].style.opacity = k; kids[i].style.transform = `translateY(${(1 - outQuint(k)) * 22}px)`
+  }
+}
+window.__render(+Q.get('t') || 0)
+</script>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "vigie-film",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Presentation film of Vigie. Separate from the product: nothing here is shipped with it.",
+  "scripts": { "build": "node build.cjs" },
+  "dependencies": { "ffmpeg-static": "^5.2.0", "playwright-core": "^1.50.0" }
+}

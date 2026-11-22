@@ -1,0 +1,41 @@
+WEBVTT
+
+1
+00:00:00.800 --> 00:00:05.200
+Your code is a forest.
+[A pine forest at dawn, a lookout tower on the hill.]
+
+2
+00:00:05.800 --> 00:00:11.200
+Your agents plant fast. Every package is a tree.
+[Trees pop up one by one in the foreground, each with a package name.]
+
+3
+00:00:11.800 --> 00:00:16.600
+On the horizon, a thin smoke: a known vulnerability.
+[A thin thread of smoke rises behind the farthest ridge.]
+
+4
+00:00:17.000 --> 00:00:21.200
+Nobody is looking. The lookout is.
+[The beam of the lookout tower lands on the smoke.]
+
+5
+00:00:21.800 --> 00:00:27.600
+Install blocked, before it lands.
+[The real Vigie report appears: install of lodash 4.17.20 blocked, 4 known vulnerabilities.]
+
+6
+00:00:27.900 --> 00:00:34.200
+The report tells your agent what to do.
+[The line "What to do: Upgrade lodash to 4.18.0 or later" is highlighted; the four sources answer ok.]
+
+7
+00:00:34.800 --> 00:00:39.600
+The agent fixes it. The forest stays safe.
+[The lodash 4.18.0 tree is planted; day breaks, the tower keeps watching.]
+
+8
+00:00:40.200 --> 00:00:47.000
+Vigie. Your agent checks known vulnerabilities, every time. Free, Open source (MIT), No account.
+[The forest in the morning, the name Vigie. OSV.dev · CISA KEV · EPSS · CERT-FR. Publicly known vulnerabilities in published packages only.]

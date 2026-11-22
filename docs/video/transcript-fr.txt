@@ -1,0 +1,34 @@
+Vigie, film de présentation (47 secondes, sans son)
+Transcription : le texte affiché, et entre crochets ce que montre l'image.
+
+0:00  Ton code est une forêt.
+      [Une forêt de sapins à l'aube, une tour de guet sur la colline.]
+0:05  Tes agents y plantent vite. Chaque paquet est un arbre.
+      [Des arbres poussent un à un au premier plan, chacun avec un nom de paquet.]
+0:11  À l'horizon, une fine fumée : une faille connue.
+      [Un mince filet de fumée monte derrière la crête la plus lointaine.]
+0:17  Personne ne regarde. La vigie, si.
+      [Le faisceau de la tour de guet se pose sur la fumée.]
+0:21  Installation bloquée, avant qu'elle n'arrive.
+      [Le vrai rapport de Vigie s'affiche : installation de lodash 4.17.20 bloquée, 4 failles connues.]
+0:27  Le rapport dit à ton agent quoi faire.
+      [La ligne « What to do: Upgrade lodash to 4.18.0 or later » est mise en avant ; les quatre sources répondent ok.]
+0:34  L'agent corrige. La forêt reste sauve.
+      [L'arbre lodash 4.18.0 est planté ; le jour se lève, la tour continue de veiller.]
+0:40  Vigie. Ton agent vérifie les failles connues, à chaque fois. Gratuit, Open source (MIT), Sans compte.
+      [La forêt au matin, le nom Vigie. OSV.dev · CISA KEV · EPSS · CERT-FR. Failles publiques des paquets publiés uniquement.]
+
+Texte du rapport affiché de 0:21 à 0:34 (sortie réelle de Vigie, en anglais ; « … » = lignes non montrées) :
+$ npm install lodash@4.17.20
+Vigie blocked this install: 1 package(s) with a high-priority known vulnerability.
+VERDICT: 4 known vulnerabilities in 1 of 1 package version(s).
+## [HIGH] lodash@4.17.20 (npm)
+What to do: Upgrade lodash to 4.18.0 or later (fixes 4 of 4).
+- GHSA-35jh-r3h4-6jhm (CVE-2021-23337) · severity HIGH · fixed in 4.17.21 · exploit probability 20%
+  Command Injection in lodash
+…
+Sources:
+- OSV.dev (Google / OpenSSF): ok
+- CISA Known Exploited Vulnerabilities: ok
+- EPSS (FIRST.org): ok
+- CERT-FR (ANSSI, French government): ok
