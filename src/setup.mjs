@@ -10,7 +10,14 @@ export const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER = path.join(ROOT, 'src', 'server.mjs');
 const HOOK = path.join(ROOT, 'bin', 'vigie-hook.mjs');
 const q = (p) => (/[\s"'$]/.test(p) ? `"${p.replace(/(["$\\])/g, '\\$1')}"` : p);
-const hookCommand = () => `node ${q(HOOK)}`;
+/**
+ * A path as written in an agent's configuration. Windows paths get forward slashes: agents hand the command to cmd,
+ * PowerShell or Git Bash depending on the machine, and a backslash does not survive all three (node accepts both).
+ */
+export const slashed = (p, sep = path.sep) => (sep === '\\' ? p.replaceAll('\\', '/') : p);
+/** The same path, quoted when a command line needs it. */
+export const shellPath = (p, sep = path.sep) => q(slashed(p, sep));
+const hookCommand = () => `node ${shellPath(HOOK)}`;
 const isOurs = (command) => /vigie-hook(\.mjs)?\b/.test(String(command || ''));
 
 export const RULE = `## Vigie — known vulnerabilities
@@ -77,7 +84,7 @@ const prune = (obj, key) => {
 const mcpEntry = (remove, extra = {}) => (json) => {
   json.mcpServers = json.mcpServers && typeof json.mcpServers === 'object' ? json.mcpServers : {};
   if (remove) delete json.mcpServers.vigie;
-  else json.mcpServers.vigie = { ...extra, command: 'node', args: [SERVER] };
+  else json.mcpServers.vigie = { ...extra, command: 'node', args: [slashed(SERVER)] };
   prune(json, 'mcpServers');
 };
 
@@ -126,7 +133,7 @@ const AGENTS = {
         PreToolUse: { matcher: 'Bash', hooks: [hook(30)] },
         PostToolUse: { matcher: 'Bash|Edit|Write|MultiEdit', hooks: [hook(30)] },
       }), plan);
-      if (user) next.push(remove ? 'claude mcp remove --scope user vigie' : `claude mcp add --scope user vigie -- node ${q(SERVER)}`);
+      if (user) next.push(remove ? 'claude mcp remove --scope user vigie' : `claude mcp add --scope user vigie -- node ${shellPath(SERVER)}`);
       else await editJson(path.join(dir, '.mcp.json'), mcpEntry(remove), plan);
       await ruleBlock(user ? path.join(base, 'CLAUDE.md') : path.join(dir, 'CLAUDE.md'), remove, plan);
     },

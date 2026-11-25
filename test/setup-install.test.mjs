@@ -9,7 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const { setup, homeMismatch, ROOT } = await import('../src/setup.mjs');
+const { setup, homeMismatch, shellPath, slashed, ROOT } = await import('../src/setup.mjs');
 const { cli } = await import('../bin/vigie.mjs');
 
 const HERE = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -139,8 +139,9 @@ test('setup: folders with spaces, accents and quotes — the hook command writte
   assert.match(done.out, /Vigie's code is in .*vigie maison/);
   const settings = await json(path.join(project, '.claude', 'settings.json'));
   const command = settings.hooks.PreToolUse[0].hooks[0].command;
-  assert.equal(command, `node "${path.join(vigie, 'bin', 'vigie-hook.mjs')}"`);
-  assert.deepEqual((await json(path.join(project, '.mcp.json'))).mcpServers.vigie.args, [path.join(vigie, 'src', 'server.mjs')]);
+  assert.equal(command, `node ${shellPath(path.join(vigie, 'bin', 'vigie-hook.mjs'))}`);
+  assert.match(command, /^node ".*vigie maison\/bin\/vigie-hook\.mjs"$/);
+  assert.deepEqual((await json(path.join(project, '.mcp.json'))).mcpServers.vigie.args, [slashed(path.join(vigie, 'src', 'server.mjs'))]);
 
   // The agent hands that string to a shell: it must start the hook (exit 0, silent, on a command that installs nothing).
   const event = JSON.stringify({ hook_event_name: 'PreToolUse', tool_name: 'Bash', cwd: project, tool_input: { command: 'ls' } });
@@ -193,5 +194,33 @@ test('VIGIE_HOME: a folder chosen for Vigie is not silently ignored', async () =
       assert.ok(s.out.includes(`Vigie's code is in ${ROOT}`));
       assert.ok(existsSync(path.join(dir, '.mcp.json')));
     });
+  }
+});
+
+test('setup: the command written for a Windows folder survives cmd, PowerShell and Git Bash', () => {
+  assert.equal(slashed('C:\\Users\\Zoé\\Mes outils\\vigie', '\\'), 'C:/Users/Zoé/Mes outils/vigie');
+  assert.equal(slashed('/home/zoé/a\\b', '/'), '/home/zoé/a\\b');
+  assert.equal(shellPath('C:\\Users\\ana\\.vigie\\bin\\vigie-hook.mjs', '\\'), 'C:/Users/ana/.vigie/bin/vigie-hook.mjs');
+  assert.equal(shellPath('C:\\Users\\Ana Maria\\.vigie\\bin\\vigie-hook.mjs', '\\'), '"C:/Users/Ana Maria/.vigie/bin/vigie-hook.mjs"');
+  // Elsewhere a backslash is an ordinary character of a file name and is kept (escaped inside quotes).
+  assert.equal(shellPath('/home/ana/.vigie/bin/vigie-hook.mjs', '/'), '/home/ana/.vigie/bin/vigie-hook.mjs');
+  assert.equal(shellPath('/home/ana maria/a\\b $x/vigie-hook.mjs', '/'), '"/home/ana maria/a\\\\b \\$x/vigie-hook.mjs"');
+});
+
+test('setup --remove: recognises its entries whatever the separator they were written with', async () => {
+  const home = await tmp();
+  for (const command of ['node C:\\Users\\ana\\.vigie\\bin\\vigie-hook.mjs', 'node "C:/Users/Ana Maria/.vigie/bin/vigie-hook.mjs"', 'node "C:\\\\Users\\\\Ana Maria\\\\.vigie\\\\bin\\\\vigie-hook.mjs"']) {
+    const dir = await tmp();
+    await mkdir(path.join(dir, '.claude'));
+    const mine = { matcher: 'Bash', hooks: [{ type: 'command', command: 'echo mine' }] };
+    await writeFile(path.join(dir, '.claude', 'settings.json'), JSON.stringify({ hooks: { PreToolUse: [mine, { matcher: 'Bash', hooks: [{ type: 'command', command, timeout: 30 }] }] } }));
+    await writeFile(path.join(dir, '.mcp.json'), JSON.stringify({ mcpServers: { vigie: { command: 'node', args: ['C:\\Users\\ana\\.vigie\\src\\server.mjs'] } } }));
+    await setup('claude', { dir, home, remove: true });
+    assert.deepEqual(await json(path.join(dir, '.claude', 'settings.json')), { hooks: { PreToolUse: [mine] } }, command);
+    assert.ok(!existsSync(path.join(dir, '.mcp.json')));
+    // Setting up again over an old entry replaces it instead of adding a second one.
+    await writeFile(path.join(dir, '.claude', 'settings.json'), JSON.stringify({ hooks: { PreToolUse: [{ matcher: 'Bash', hooks: [{ type: 'command', command }] }] } }));
+    await setup('claude', { dir, home });
+    assert.equal((await json(path.join(dir, '.claude', 'settings.json'))).hooks.PreToolUse.length, 1);
   }
 });
