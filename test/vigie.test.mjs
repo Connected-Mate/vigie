@@ -468,7 +468,7 @@ test('hook: reads install commands', () => {
   // text that only mentions an install is not an install
   assert.deepEqual(specs('echo "npm install evil" && git commit -m "pip install x" # npm i y'), ['', null]);
   // commands inside a shell -c, after pipes and separators, with cd
-  assert.deepEqual(specs('bash -lc "cd x && yarn add react@18"'), ['npm:react@18', '/tmp/p/x']);
+  assert.deepEqual(specs('bash -lc "cd x && yarn add react@18"'), ['npm:react@18', path.resolve('/tmp/p', 'x')]);
   assert.deepEqual(specs('echo a; (npm i a@1.0.0 | tee log) & wait'), ['npm:a@1.0.0', '/tmp/p']);
   assert.deepEqual(specs('npm i lodash@npm:lodash-es@4.17.20'), ['npm:lodash-es@4.17.20', '/tmp/p']);
   // packages that are run without being installed
