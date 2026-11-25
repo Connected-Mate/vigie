@@ -36,7 +36,7 @@
       ta.select();
       var ok = doc.execCommand('copy');
       doc.body.removeChild(ta);
-      return ok;
+      return !!ok;
     } catch (e) { return false; }
   }
   all('[data-copy]').forEach(function (btn) {
@@ -44,7 +44,22 @@
     var original = label.textContent;
     var hint = btn.parentNode.parentNode.querySelector('[data-copy-hint]');
     var timer = null;
+    // Nothing could copy (old browser, blocked clipboard): say so and hand over the guide link. Never the prompt itself.
+    function failed() {
+      var msg = btn.getAttribute('data-copy-fail'), url = btn.getAttribute('data-guide');
+      if (!msg || !url) return;
+      clearTimeout(timer);
+      announce(msg + ' ' + url);
+      if (!hint) return;
+      hint.textContent = msg + ' ';
+      var a = doc.createElement('a');
+      a.href = url; a.rel = 'noopener'; a.textContent = url.replace(/^https?:\/\//, '');
+      hint.appendChild(a);
+      hint.removeAttribute('aria-hidden');
+      hint.classList.add('is-on');
+    }
     function done() {
+      if (hint) hint.setAttribute('aria-hidden', 'true');
       announce(btn.getAttribute('data-copied'));
       btn.style.minWidth = btn.offsetWidth + 'px'; // the button keeps its size, its neighbours do not jump
       label.textContent = btn.getAttribute('data-copied-short') || btn.getAttribute('data-copied');
@@ -56,11 +71,16 @@
         if (hint) hint.classList.remove('is-on');
       }, 3200);
     }
+    function fallback(text) {
+      var ok = legacyCopy(text);
+      try { btn.focus(); } catch (e) {} // the helper field took the focus: give it back
+      if (ok) done(); else failed();
+    }
     btn.addEventListener('click', function () {
       var text = btn.getAttribute('data-copy');
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function () { if (legacyCopy(text)) done(); });
-      } else if (legacyCopy(text)) { done(); }
+        navigator.clipboard.writeText(text).then(done, function () { fallback(text); });
+      } else { fallback(text); }
     });
   });
 

@@ -55,6 +55,7 @@ UI = {
            "state": {"clear": "sain", "wisp": "filet de fumée", "smoke": "fumée", "fire": "incendie"},
            "prio": {"clear": "rien de connu", "wisp": "priorité moyenne", "smoke": "priorité haute", "fire": "à traiter tout de suite"},
            "video_soon": "Bientôt ici", "credits": "Polices Besley et Hanken Grotesk (licence OFL). Logos des agents : Simple Icons (CC0) ; ces marques appartiennent à leurs propriétaires et sont citées pour dire avec quoi Vigie fonctionne, sans partenariat.",
+           "copy_fail": "La copie n’a pas marché ici. Donne ce lien à ton agent :", "film": "Film de présentation de Vigie, muet, 47 secondes",
            "privacy": "Ce site ne dépose aucun cookie et ne te suit pas.", "manual_cmd": "La commande, pour Claude Code",
            "og_locale": "fr_FR"},
     "en": {"skip": "Skip to content", "home": "home", "lang_nav": "Language", "other": "Version française", "other_short": "FR",
@@ -69,6 +70,7 @@ UI = {
            "state": {"clear": "healthy", "wisp": "a wisp of smoke", "smoke": "smoke", "fire": "fire"},
            "prio": {"clear": "nothing known", "wisp": "medium priority", "smoke": "high priority", "fire": "act now"},
            "video_soon": "Coming here soon", "credits": "Typefaces Besley and Hanken Grotesk (OFL licence). Agent logos: Simple Icons (CC0); these brands belong to their owners and are named to say what Vigie works with, with no partnership implied.",
+           "copy_fail": "Copying did not work here. Give this link to your agent:", "film": "Vigie presentation film, silent, 47 seconds",
            "privacy": "This site sets no cookie and does not track you.", "manual_cmd": "The command, for Claude Code",
            "og_locale": "en_US"},
 }
@@ -81,8 +83,15 @@ def typo(text):
     return text.replace("'", "\u2019")
 
 
+EN_IN_FR = ("What to do", "INCOMPLETE")
+
+
 def tx(node, lang):
-    return esc(typo(node[lang]))
+    out = esc(typo(node[lang]))
+    if lang == "fr":  # English words quoted in French text are marked as English (WCAG 3.1.2)
+        for w in EN_IN_FR:
+            out = out.replace(f"«\u00a0{w}\u00a0»", f'«\u00a0<span lang="en">{w}</span>\u00a0»').replace(f"« {w} »", f'« <span lang="en">{w}</span> »')
+    return out
 
 
 # ————————————————————————————————————————————— real report → HTML (colour only, text untouched)
@@ -140,6 +149,11 @@ PKG_SECTION = {"express": "express", "lodash": "lodash", "log4j": "org.apache.lo
 
 # ————————————————————————————————————————————— pieces
 
+def cmd_html(cmd: str) -> str:
+    """A command that only breaks between its words: the text copied stays the exact single line."""
+    return " ".join(f'<span class="tok">{esc(t)}</span>' for t in cmd.split(" "))
+
+
 def agent_chips(lang, small=False):
     keys = SHEET["agent_setup"].get("agents") or scaffold.DEFAULT_AGENTS
     if small:
@@ -155,7 +169,7 @@ def copy_button(lang, label_node, copied_node, cls="btn btn--go btn--lg"):
     icon = ('<svg class="btn__ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
             '<rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.500 4H15"/></svg>'
             '<svg class="btn__ok" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.500 4.500L19 7.500"/></svg>')
-    return (f'<button class="{cls}" type="button" data-copy="{esc(C["agent"]["prompt"][lang])}" data-copied="{tx(copied_node, lang)}" data-copied-short="{UI[lang]["copied"]}">'
+    return (f'<button class="{cls}" type="button" data-copy="{esc(C["agent"]["prompt"][lang])}" data-copied="{tx(copied_node, lang)}" data-copied-short="{UI[lang]["copied"]}" data-copy-fail="{UI[lang]["copy_fail"]}" data-guide="{REPO}/blob/main/AGENT-SETUP.md">'
             f'{icon}<span data-copy-label>{tx(label_node, lang)}</span></button>')
 
 
@@ -182,7 +196,7 @@ def hero(lang, prefix):
             f'<div class="slip__panel" role="tabpanel" id="panel-{pid}" aria-labelledby="tab-{pid}" data-pkg="{pid}"{"" if pid == "log4j" else " hidden"}>'
             f'<p class="slip__say"><span class="pill pill--{state}">{ui["prio"][state]}</span>{tx(h["trees"][pid], lang)}</p>'
             + (f'<p class="slip__call">{esc(call)}</p>' if call else "")
-            + f'<pre class="term" lang="en" tabindex="0" aria-label="{ui["real"]}">{report_html(body)}</pre>{more}</div>')
+            + f'<pre class="term" lang="en" tabindex="0" role="group" aria-label="{ui["real"]}">{report_html(body)}</pre>{more}</div>')
     alt = tx(C["hero_alt"], lang)
     return f'''<section class="hero" aria-labelledby="title" data-demo>
   <div class="hero__sky" aria-hidden="true"></div>
@@ -195,8 +209,10 @@ def hero(lang, prefix):
         {copy_button(lang, h["cta"], h["cta_copied"])}
         <a class="btn btn--ghost btn--lg" href="#watch">{tx(h["secondary"], lang)}</a>
       </div>
-      <p class="copy-hint" data-copy-hint aria-hidden="true"></p>
-      <div class="hero__with"><span>{ui["works"]}</span>{agent_chips(lang, small=True)}</div>
+      <div class="hero__after">
+        <div class="hero__with"><span>{ui["works"]}</span>{agent_chips(lang, small=True)}</div>
+        <p class="copy-hint" data-copy-hint aria-hidden="true"></p>
+      </div>
       <p class="fine">{tx(C["platform"], lang)}</p>
     </div>
     <div class="slip" id="demo" aria-label="{ui["slip"]}" role="group">
@@ -204,7 +220,7 @@ def hero(lang, prefix):
         <span class="slip__title">{tx(h["demo_title"], lang)}</span>
         <span class="slip__asked">{ui["asked"]} <code>vigie check</code></span>
       </div>
-      <pre class="term term--verdict" lang="en" aria-label="{ui["real"]}">{report_html(VERDICT)}</pre>
+      <pre class="term term--verdict" lang="en">{report_html(VERDICT)}</pre>
       {"".join(panels)}
       <p class="slip__foot"><a href="#report">{ui["full"]}</a></p>
     </div>
@@ -251,6 +267,7 @@ def sections(lang, prefix):
     <h2 class="h2" id="agent-title">{tx(a["title"], lang)}</h2>
     <p class="section__lede">{tx(a["text"], lang)}</p>
     <div class="prompt">{copy_button(lang, a["copy"], a["copied"])}</div>
+    <p class="copy-hint copy-hint--keep" data-copy-hint aria-hidden="true"></p>
   </div>
   <div class="agent-setup__crew">
     {agent_chips(lang)}
@@ -287,10 +304,10 @@ def sections(lang, prefix):
     tabs = "".join(f'<button role="tab" id="rt-{k}" aria-controls="rp-{k}" aria-selected="{"true" if i == 0 else "false"}" tabindex="{0 if i == 0 else -1}">{ui["t_" + k]}</button>'
                    for i, (k, *_r) in enumerate(tabs_def))
     pans = "".join(
-        f'<figure class="out" role="tabpanel" id="rp-{k}" aria-labelledby="rt-{k}"{"" if i == 0 else " data-tabhide"}>'
-        f'<figcaption><span class="out__k">{ui["t_" + k]}</span>{tx(r["captions"][k], lang)}</figcaption>'
+        f'<div class="out" role="tabpanel" id="rp-{k}" aria-labelledby="rt-{k}"{"" if i == 0 else " data-tabhide"}>'
+        f'<p class="out__cap"><span class="out__k">{ui["t_" + k]}</span>{tx(r["captions"][k], lang)}</p>'
         f'<p class="out__cmd"><code>$ {esc(cmd)}</code>{f"<span>{esc(note)}</span>" if note else ""}</p>'
-        f'<pre class="term term--big" lang="en" tabindex="0" aria-label="{ui["real"]} : {ui["t_" + k]}">{report_html(text)}</pre></figure>'
+        f'<pre class="term term--big" lang="en" tabindex="0" role="group" aria-label="{ui["real"]} : {ui["t_" + k]}">{report_html(text)}</pre></div>'
         for i, (k, text, cmd, note) in enumerate(tabs_def))
     out.append(f'''<section class="section section--night" id="report" aria-labelledby="report-title">
   {scene.strip_svg(3, "strip strip--top")}
@@ -305,7 +322,7 @@ def sections(lang, prefix):
 </section>''')
 
     ins = C["install"]
-    isteps = "".join(f'<li style="--i:{i}"><h3>{tx(s["title"], lang)}</h3><p>{tx(s["text"], lang)}</p><pre class="cmd"><code>{esc(s["cmd"])}</code></pre></li>' for i, s in enumerate(ins["steps"]))
+    isteps = "".join(f'<li style="--i:{i}"><h3>{tx(s["title"], lang)}</h3><p>{tx(s["text"], lang)}</p><pre class="cmd"><code>{cmd_html(s["cmd"])}</code></pre></li>' for i, s in enumerate(ins["steps"]))
     out.append(f'''<section class="wrap section" id="install" aria-labelledby="install-title" data-reveal>
   <h2 class="h2" id="install-title">{tx(ins["title"], lang)}</h2>
   <p class="section__lede">{tx(ins["lede"], lang)}</p>
@@ -326,12 +343,12 @@ def sections(lang, prefix):
     out.append(video_section(lang, prefix))
 
     out.append(f'''<section class="wrap section duo" data-reveal>
-  <div class="duo__a" id="source" aria-labelledby="source-title">
+  <div class="duo__a" id="source">
     <h2 class="h2" id="source-title">{tx(C["source"]["title"], lang)}</h2>
     <p>{tx(C["source"]["text"], lang)}</p>
     <a class="btn btn--ghost btn--lg" href="{REPO}" rel="noopener">{tx(C["source"]["btn"], lang)}</a>
   </div>
-  <div class="duo__b" id="coffee" aria-labelledby="coffee-title">
+  <div class="duo__b" id="coffee">
     <svg class="mug" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path class="mug__steam" d="M24 6c-3 4 3 6 0 10"/><path class="mug__steam" d="M34 4c-3 4 3 6 0 10"/>
       <path d="M12 24h36v18a12 12 0 0 1-12 12H24a12 12 0 0 1-12-12V24z"/><path d="M48 29h4a7 7 0 0 1 0 14h-4"/></svg>
@@ -358,7 +375,7 @@ def video_section(lang, prefix):
     if mp4.exists() and mp4.stat().st_size > 200_000:
         names = {"webm": f"vigie-{lang}.webm", "mp4": f"vigie-{lang}.mp4"}
         srcs = "".join(f'<source src="{prefix}video/{n}" type="video/{k}">' for k, n in names.items() if (vd / n).exists())
-        track = (f'<track kind="captions" src="{prefix}video/vigie-{lang}.vtt" srclang="{lang}" label="{"Français" if lang == "fr" else "English"}" default>'
+        track = (f'<track kind="captions" src="{prefix}video/vigie-{lang}.vtt" srclang="{lang}" label="{"Français" if lang == "fr" else "English"}">'
                  if (vd / f"vigie-{lang}.vtt").exists() else "")
         tfile = vd / f"transcript-{lang}.txt"
         lines = [x.strip() for x in tfile.read_text(encoding="utf-8").splitlines() if x.strip()] if tfile.exists() else []
@@ -375,7 +392,7 @@ def video_section(lang, prefix):
         tr = (f'<details class="video__text" id="video-text"><summary>{tx(v["transcript_label"], lang)}</summary>'
               f'{"".join(f"<p>{esc(x)}</p>" for x in intro)}<ul role="list">{lis}</ul></details>' if lines else "")
         poster = f' poster="{prefix}video/poster-{lang}.jpg"' if (vd / f"poster-{lang}.jpg").exists() else ""
-        inner = (f'<div class="video__frame"><video muted loop playsinline controls preload="none"{poster}'
+        inner = (f'<div class="video__frame"><video muted loop playsinline controls preload="none"{poster} aria-label="{ui["film"]}"'
                  f'{" aria-describedby=" + chr(34) + "video-text" + chr(34) if tr else ""}>{srcs}{track}</video></div>{tr}')
     else:
         inner = (f'<div class="video__frame video__frame--soon"><div class="video__soon">{scene.strip_svg(9, "strip strip--video")}'
@@ -429,7 +446,7 @@ def page(lang):
     </nav>
     <nav class="langs" aria-label="{ui["lang_nav"]}">
       <span aria-current="true">{lang.upper()}</span>
-      <a href="{other_href}" data-lang="{other}" data-lang-key="{key}" hreflang="{other}" lang="{other}" aria-label="{ui["other"]}">{ui["other_short"]}</a>
+      <a href="{other_href}" data-lang="{other}" data-lang-key="{key}" hreflang="{other}" lang="{other}" aria-label="{ui["other_short"]}, {ui["other"]}">{ui["other_short"]}</a>
     </nav>
   </div>
 </header>'''
@@ -485,7 +502,7 @@ def page_404():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(n["title"][d])} — {esc(SHEET["name"])}</title>
+<title>{tx(n["title"], d)} — {esc(SHEET["name"])}</title>
 <meta name="robots" content="noindex">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="{root}assets/favicon-32.png" sizes="32x32" type="image/png">
@@ -493,10 +510,10 @@ def page_404():
 </head>
 <body class="nf">
 <main class="wrap notfound">
-  <h1 class="display">{esc(n["title"][d])}</h1>
-  <p class="lede">{esc(n["text"][d])}</p>
-  <p><a class="btn btn--go btn--lg" href="{root}">{esc(n["back"][d])}</a></p>
-  <p lang="{o}" class="fine">{esc(n["text"][o])} <a class="link" href="{root}{o}/">{esc(n["back"][o])}</a></p>
+  <h1 class="display">{tx(n["title"], d)}</h1>
+  <p class="lede">{tx(n["text"], d)}</p>
+  <p><a class="btn btn--go btn--lg" href="{root}">{tx(n["back"], d)}</a></p>
+  <p lang="{o}" class="fine">{tx(n["text"], o)} <a class="link" href="{root}{o}/" hreflang="{o}">{tx(n["back"], o)}</a></p>
 </main>
 {scene.strip_svg(5, "strip strip--foot")}
 </body>

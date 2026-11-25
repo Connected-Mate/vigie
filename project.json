@@ -717,7 +717,7 @@
             "fr": "Le code arrive dans le dossier ~/.vigie. Il n'y a rien d'autre à installer.",
             "en": "The code lands in the ~/.vigie folder. There is nothing else to install."
           },
-          "cmd": "git clone --depth 1 https://github.com/Connected-Mate/vigie ~/.vigie"
+          "cmd": "git clone --depth 1 --filter=blob:none --sparse https://github.com/Connected-Mate/vigie ~/.vigie && git -C ~/.vigie sparse-checkout set bin src"
         },
         {
           "title": {
