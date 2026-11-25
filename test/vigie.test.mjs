@@ -461,7 +461,7 @@ test('hook: reads install commands', () => {
     return [r.installs.map((p) => `${p.ecosystem}:${p.name}@${p.spec}${p.run ? '!' : ''}`).join(' '), r.project ? r.dir : null];
   };
   // a flag's value is not a package; --prefix moves the project folder
-  assert.deepEqual(specs('npm i --prefix sub --registry https://r lodash@^4.17.0'), ['npm:lodash@^4.17.0', '/tmp/p/sub']);
+  assert.deepEqual(specs('npm i --prefix sub --registry https://r lodash@^4.17.0'), ['npm:lodash@^4.17.0', path.resolve('/tmp/p', 'sub')]);
   assert.deepEqual(specs('sudo -E pip3 install --index-url https://x "django>=3,<4" flask[async]~=2.0'), ['PyPI:django@>=3,<4 PyPI:flask@~=2.0', '/tmp/p']);
   assert.deepEqual(specs('FOO=1 BAR="a b" python3 -m pip install -U pip'), ['PyPI:pip@', '/tmp/p']);
   assert.deepEqual(specs('poetry add "requests@^2.25" --group dev'), ['PyPI:requests@>=2.25,<3', '/tmp/p']);

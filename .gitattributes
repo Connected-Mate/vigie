@@ -1,0 +1,7 @@
+# Same line endings on every system: the scripts start with "#!/usr/bin/env node" and the tests read fixtures byte for byte.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.woff2 binary
+*.mp4 binary
+*.webm binary
