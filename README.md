@@ -110,7 +110,7 @@ Exit code `0`: nothing high-priority · `1`: high-priority findings (`--fail-on 
 - The hook reads shell commands; it is a guardrail, not a sandbox. An install hidden in a script (`make deps`, `./setup.sh`) is not seen before it runs — the check after an edit and `vigie check` in CI are there for that. Before an install, what a package pulls in is computed for a fresh install and can differ slightly from what your lockfile ends up with; the check after the install reads the real lockfile.
 - Severity comes from the advisory. When it gives no severity word, Vigie computes it from the advisory's CVSS 3 or CVSS 4 vector; an advisory with neither shows as `UNKNOWN` and is treated as medium.
 - Sub-folders are read down to 4 levels and 300 dependency files; installed code (`node_modules`, `.venv`, `vendor`…) is skipped.
-- Tested on macOS with Node 22. Written for Node 18+ and for Windows paths, not yet run there.
+- The tests run on Linux, macOS and Windows, with Node 18 and Node 22, on every change. Used for real (agent setup, hook inside an agent session) on macOS only: on Linux and Windows that part is not yet run.
 - What leaves your machine: package names and versions, sent to the public APIs above. Never your code or your paths. Results are cached in `~/.cache/vigie` (`VIGIE_CACHE_DIR`), cleaned after 30 days.
 
 ## Tests
