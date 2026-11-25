@@ -1,11 +1,12 @@
 // `vigie setup` — writes (or removes) the agent configuration, so nobody edits JSON by hand.
 // It only ever touches Vigie's own entries, keeps everything else, and refuses to overwrite a file it cannot read.
 import { readFile, writeFile, mkdir, rename, unlink, rmdir } from 'node:fs/promises';
+import { realpathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
 
-const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+export const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER = path.join(ROOT, 'src', 'server.mjs');
 const HOOK = path.join(ROOT, 'bin', 'vigie-hook.mjs');
 const q = (p) => (/[\s"'$]/.test(p) ? `"${p.replace(/(["$\\])/g, '\\$1')}"` : p);
@@ -52,20 +53,21 @@ async function dropFile(file) {
   if (path.basename(folder).startsWith('.')) await rmdir(folder).catch(() => {});
 }
 
+// Every file is read and its new content worked out first; `plan` collects the writes, which run only once
+// all the files could be read. A broken settings file therefore stops setup before anything is written.
+
 /** Applies `change(json)` to a JSON file. Deletes the file (and its empty folder) when nothing is left. */
-async function editJson(file, change, log) {
+async function editJson(file, change, plan) {
   const before = await readJson(file);
   const json = structuredClone(before ?? {});
   change(json);
   const text = JSON.stringify(json, null, 2) + '\n';
-  if (before !== null && JSON.stringify(before) === JSON.stringify(json)) return log.push(`unchanged  ${file}`);
+  if (before !== null && JSON.stringify(before) === JSON.stringify(json)) return plan.push({ line: `unchanged  ${file}` });
   if (!Object.keys(json).length) {
     if (before === null) return;
-    await dropFile(file);
-    return log.push(`removed    ${file}`);
+    return plan.push({ line: `removed    ${file}`, run: () => dropFile(file) });
   }
-  await writeAtomic(file, text);
-  log.push(`${before === null ? 'created' : 'updated'}    ${file}`);
+  plan.push({ line: `${before === null ? 'created' : 'updated'}    ${file}`, run: () => writeAtomic(file, text) });
 }
 
 const prune = (obj, key) => {
@@ -93,7 +95,7 @@ const nestedHooks = (remove, wanted) => (json) => {
   prune(json, 'hooks');
 };
 
-async function ruleBlock(file, remove, log) {
+async function ruleBlock(file, remove, plan) {
   let text = '';
   try {
     text = await readFile(file, 'utf8');
@@ -109,46 +111,42 @@ async function ruleBlock(file, remove, log) {
     stripped = parts.length ? `${parts.join('\n\n')}\n` : '';
   }
   const next = remove ? stripped : `${stripped.trim() ? stripped.replace(/\n*$/, '\n\n') : ''}${block}\n`;
-  if (next === text) return log.push(`unchanged  ${file}`);
-  if (!next.trim()) {
-    await dropFile(file);
-    return log.push(`removed    ${file}`);
-  }
-  await writeAtomic(file, next);
-  log.push(`${text ? 'updated' : 'created'}    ${file}`);
+  if (next === text) return plan.push({ line: `unchanged  ${file}` });
+  if (!next.trim()) return plan.push({ line: `removed    ${file}`, run: () => dropFile(file) });
+  plan.push({ line: `${text ? 'updated' : 'created'}    ${file}`, run: () => writeAtomic(file, next) });
 }
 
 const AGENTS = {
   claude: {
     label: 'Claude Code',
-    async apply({ dir, home, user, remove, log, next }) {
+    async apply({ dir, home, user, remove, plan, next }) {
       const base = user ? path.join(home, '.claude') : path.join(dir, '.claude');
       const hook = (timeout) => ({ type: 'command', command: hookCommand(), timeout });
       await editJson(path.join(base, 'settings.json'), nestedHooks(remove, {
         PreToolUse: { matcher: 'Bash', hooks: [hook(30)] },
         PostToolUse: { matcher: 'Bash|Edit|Write|MultiEdit', hooks: [hook(30)] },
-      }), log);
+      }), plan);
       if (user) next.push(remove ? 'claude mcp remove --scope user vigie' : `claude mcp add --scope user vigie -- node ${q(SERVER)}`);
-      else await editJson(path.join(dir, '.mcp.json'), mcpEntry(remove), log);
-      await ruleBlock(user ? path.join(base, 'CLAUDE.md') : path.join(dir, 'CLAUDE.md'), remove, log);
+      else await editJson(path.join(dir, '.mcp.json'), mcpEntry(remove), plan);
+      await ruleBlock(user ? path.join(base, 'CLAUDE.md') : path.join(dir, 'CLAUDE.md'), remove, plan);
     },
   },
   gemini: {
     label: 'Gemini CLI',
-    async apply({ dir, home, user, remove, log }) {
+    async apply({ dir, home, user, remove, plan }) {
       const base = user ? path.join(home, '.gemini') : path.join(dir, '.gemini');
       await editJson(path.join(base, 'settings.json'), (json) => {
         mcpEntry(remove)(json);
         nestedHooks(remove, { BeforeTool: { matcher: 'run_shell_command', hooks: [{ name: 'vigie', type: 'command', command: hookCommand(), timeout: 30000 }] } })(json);
-      }, log);
-      await ruleBlock(user ? path.join(base, 'GEMINI.md') : path.join(dir, 'GEMINI.md'), remove, log);
+      }, plan);
+      await ruleBlock(user ? path.join(base, 'GEMINI.md') : path.join(dir, 'GEMINI.md'), remove, plan);
     },
   },
   cursor: {
     label: 'Cursor',
-    async apply({ dir, home, user, remove, log }) {
+    async apply({ dir, home, user, remove, plan }) {
       const base = user ? path.join(home, '.cursor') : path.join(dir, '.cursor');
-      await editJson(path.join(base, 'mcp.json'), mcpEntry(remove, { type: 'stdio' }), log);
+      await editJson(path.join(base, 'mcp.json'), mcpEntry(remove, { type: 'stdio' }), plan);
       await editJson(path.join(base, 'hooks.json'), (json) => {
         json.hooks = json.hooks && typeof json.hooks === 'object' ? json.hooks : {};
         const list = (Array.isArray(json.hooks.beforeShellExecution) ? json.hooks.beforeShellExecution : []).filter((h) => !isOurs(h?.command));
@@ -158,8 +156,8 @@ const AGENTS = {
         prune(json, 'hooks');
         if (json.hooks) json.version = json.version ?? 1;
         else if (Object.keys(json).length === 1 && json.version === 1) delete json.version;
-      }, log);
-      if (!user) await ruleBlock(path.join(dir, 'AGENTS.md'), remove, log);
+      }, plan);
+      if (!user) await ruleBlock(path.join(dir, 'AGENTS.md'), remove, plan);
     },
   },
 };
@@ -172,8 +170,31 @@ export const agents = () => Object.entries(AGENTS).map(([id, a]) => `${id} (${a.
 export async function setup(agent, { dir = process.cwd(), home = os.homedir(), user = false, remove = false } = {}) {
   const target = AGENTS[String(agent || '').toLowerCase()];
   if (!target) throw new Error(`Unknown agent "${agent ?? ''}". Choose one of: ${Object.keys(AGENTS).join(', ')}. Other agents: see AGENT-SETUP.md`);
-  const log = [];
+  const plan = [];
   const next = [];
-  await target.apply({ dir: path.resolve(dir), home, user, remove, log, next });
+  await target.apply({ dir: path.resolve(dir), home, user, remove, plan, next });
+  const log = [];
+  for (const step of plan) {
+    if (step.run) await step.run();
+    log.push(step.line);
+  }
   return { label: target.label, log, next };
+}
+
+const real = (p) => {
+  try {
+    return realpathSync(p);
+  } catch {
+    return path.resolve(p);
+  }
+};
+
+/**
+ * The person (or their company) can choose Vigie's folder with VIGIE_HOME. When this copy runs from another
+ * folder, the choice was ignored: returns the sentence that says so, or '' when all is well.
+ */
+export function homeMismatch(env = process.env, root = ROOT) {
+  const wanted = String(env.VIGIE_HOME || '').trim();
+  if (!wanted || real(wanted) === real(root)) return '';
+  return `Warning: VIGIE_HOME is set to ${wanted}, but this Vigie runs from ${root}. That folder was chosen for Vigie: install and run it from there (AGENT-SETUP.md, step 2), or unset VIGIE_HOME.`;
 }

@@ -57,7 +57,11 @@ export async function cli(argv, out = (s) => process.stdout.write(s + '\n'), err
     else if (a === '--fail-on') opt.failOn = argv[++i];
     else if (a.startsWith('--fail-on=')) opt.failOn = a.slice(10);
     else if (a === '-h' || a === '--help') return out(HELP), 0;
-    else if (a === '-v' || a === '--version') return out(VERSION), 0;
+    else if (a === '-v' || a === '--version') {
+      const warning = (await import('../src/setup.mjs')).homeMismatch();
+      if (warning) err(warning);
+      return out(VERSION), 0;
+    }
     else if (a.startsWith('-') && a.length > 1) return err(`Unknown option ${a}. Try: vigie --help`), 2;
     else args.push(a);
   }
@@ -69,14 +73,15 @@ export async function cli(argv, out = (s) => process.stdout.write(s + '\n'), err
     return 0;
   }
   if (command === 'setup') {
-    const { setup, agents } = await import('../src/setup.mjs');
+    const { setup, agents, homeMismatch, ROOT } = await import('../src/setup.mjs');
     if (!rest.length) return err(`Which agent? vigie setup <${agents().map((a) => a.split(' ')[0]).join('|')}> [--user] [--remove]`), 2;
     try {
       const r = await setup(rest[0], { dir: rest[1] || '.', user: opt.user, remove: opt.remove });
       out(`Vigie ${opt.remove ? 'removed from' : 'set up for'} ${r.label} (${opt.user ? 'all your projects' : 'this project'}):`);
       out(r.log.map((l) => `  ${l}`).join('\n') || '  nothing to change');
       if (r.next.length) out(`Now run:\n${r.next.map((c) => `  ${c}`).join('\n')}`);
-      if (!opt.remove) out('Restart the agent so it loads the new configuration.');
+      if (!opt.remove) out(`Vigie's code is in ${ROOT}\nRestart the agent so it loads the new configuration.`);
+      if (!opt.remove && homeMismatch()) err(homeMismatch());
       return 0;
     } catch (e) {
       return err(String(e.message)), 2;

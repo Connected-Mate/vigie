@@ -11,16 +11,16 @@
 Vigie is a lookout for known vulnerabilities. It gives you (the agent) five tools to check package versions against public databases (OSV.dev, CISA KEV, EPSS, CERT-FR; plus deps.dev for release signals when single packages are checked or installed), and a hook that stops you before you install a package with a serious known vulnerability, then checks the project after each install.
 
 What it changes on the machine:
-- one folder with Vigie's code (`~/.vigie` by default, well under 1 MB, no dependency to install);
+- one folder with Vigie's code: `~/.vigie`, or the folder the `VIGIE_HOME` variable names when it is already set (about half a megabyte, no dependency to install);
 - in the project you are in: an MCP server entry, a hook entry and a short rule block in the agent's instruction file. Nothing else in the project is touched, and its code is never modified;
-- a cache of public vulnerability data in `~/.cache/vigie`.
+- a cache of public vulnerability data in `~/.cache/vigie` (or the folder `VIGIE_CACHE_DIR` names when it is set).
 
 What leaves the machine: package names and versions, sent to those public databases. Never code, file paths or personal data. No account, no API key.
 
 ## 1. Check prerequisites
 
 - Node.js 18 or later: `node --version` → `v18.0.0` or higher.
-- git: `git --version` → any version.
+- git 2.25 or later: `git --version`.
 - Internet access to the public databases: `node -e "fetch('https://api.osv.dev/v1/vulns/GHSA-35jh-r3h4-6jhm').then(r=>console.log(r.status))"` → `200`.
 
 If something is missing, explain it in one sentence and offer to install it (ask first). If the network check fails behind a company proxy, say so: Vigie cannot work without reaching these databases, and will answer "INCOMPLETE" rather than "all clear".
@@ -30,14 +30,18 @@ If something is missing, explain it in one sentence and offer to install it (ask
 Idempotent: running it twice updates Vigie instead of breaking anything.
 
 ```sh
-VIGIE_HOME="${VIGIE_HOME:-$HOME/.vigie}"
-if [ -d "$VIGIE_HOME/.git" ]; then git -C "$VIGIE_HOME" pull --ff-only; else git clone --depth 1 https://github.com/Connected-Mate/vigie "$VIGIE_HOME"; fi
+VIGIE_HOME="${VIGIE_HOME:-$HOME/.vigie}"; echo "Vigie's folder: $VIGIE_HOME"
+if [ -d "$VIGIE_HOME/.git" ]; then git -C "$VIGIE_HOME" pull --ff-only; else git clone --depth 1 --filter=blob:none --sparse https://github.com/Connected-Mate/vigie "$VIGIE_HOME" && git -C "$VIGIE_HOME" sparse-checkout set bin src; fi
 node "$VIGIE_HOME/bin/vigie.mjs" --version
 ```
 
-Expected: a version number such as `1.0.0`. There is nothing to `npm install`.
+Expected: the folder, then a version number such as `1.0.0`. There is nothing to `npm install`.
 
-`VIGIE_HOME` is a plain shell variable: if your shell does not keep variables between commands, set it again at the start of each command below, or write the full path instead.
+**Run this block as it is written; do not shorten it to `~/.vigie`.** When `VIGIE_HOME` is already set in your environment, the person (or their company) chose that folder for Vigie and the first line keeps it. `~/.vigie` is only the default when nothing is set. If Vigie prints `Warning: VIGIE_HOME is set to …`, it was put in another folder than the chosen one: install it in the chosen folder and use that one.
+
+The clone brings only the program (`bin/`, `src/` and the files at the root of the repository), about half a megabyte; the website and the videos stored in the same repository are left out. If git refuses `--sparse` or `--filter`, it is older than 2.25: offer to update it, or use a plain `git clone --depth 1 https://github.com/Connected-Mate/vigie "$VIGIE_HOME"` and tell the person it takes about 40 MB.
+
+`VIGIE_HOME` is a plain shell variable: if your shell does not keep variables between commands, run the first line of the block again at the start of each command below, or write the full path it printed.
 
 ## 3. Configure
 
@@ -149,7 +153,7 @@ The server is `node /absolute/path/to/.vigie/src/server.mjs` (stdio, no environm
    - Path A: run `node "$VIGIE_HOME/bin/vigie.mjs" check .` and show the person the verdict line of their own project, the packages marked `[ACT NOW]` or `[HIGH]` with their "What to do" line, and offer to apply the fixes (do not change their dependency files without their yes). The labels are priorities for action, not raw severities: `[ACT NOW]` = exploited in real attacks, malicious package or open CERT-FR alert; `[HIGH]` = critical or high severity, or a high exploit probability; then `[MEDIUM]` and `[LOW]`.
    - Path B: run `node "$VIGIE_HOME/bin/vigie.mjs" check npm:lodash@4.17.20` as a demonstration. Expected: `VERDICT: 4 known vulnerabilities in 1 of 1 package version(s)` (the count can grow over time) and a `What to do: Upgrade lodash to …` line.
 
-Report to the person in one or two plain sentences: what is installed and where, that their agent will now be stopped before installing a package with a serious known vulnerability, what the check of their project found, and how to remove it (step 5). Say clearly that Vigie only knows publicly disclosed vulnerabilities in published packages: it does not review their own code.
+Report to the person in one or two plain sentences: what is installed and where (the real folders: `setup` prints `Vigie's code is in …`, and the cache is in `~/.cache/vigie` unless `VIGIE_CACHE_DIR` is set), that their agent will now be stopped before installing a package with a serious known vulnerability, what the check of their project found, and how to remove it (step 5). Say clearly that Vigie only knows publicly disclosed vulnerabilities in published packages: it does not review their own code.
 
 ## 5. Uninstall
 
@@ -165,6 +169,7 @@ Then, after asking the person (these delete folders): remove `~/.vigie` (the cod
 - **`VERDICT: INCOMPLETE`** → a database could not be reached, or the folder has no dependency file. The "Sources" lines of the report name what failed. Check the network, then run again. Never tell the person the project is safe on an incomplete verdict.
 - **`Vigie could not check … Not blocked`** shown by the hook → same cause; the install went through unverified. Run `check_project` once the network is back.
 - **Claude Code does not show the Vigie tools** → restart it in the project folder and accept the project MCP server; `claude mcp list`, run from that folder, must show `vigie`.
-- **`… is not valid JSON: fix or move it first`** during setup → an existing settings file is broken. Vigie never overwrites it: show the person, fix the file with them, run setup again.
+- **`… is not valid JSON: fix or move it first`** during setup → an existing settings file is broken. Vigie never overwrites it, and nothing at all was written by that run: show the person, fix the file with them, run setup again.
+- **`Warning: VIGIE_HOME is set to …, but this Vigie runs from …`** → Vigie was installed in another folder than the one chosen with `VIGIE_HOME`. Install it in the chosen folder (step 2), run `setup` again from there, and offer to delete the other copy (ask first).
 - **The hook blocks a package the person really wants** → explain the finding to them. If they accept the risk, they add the advisory id to `.vigieignore` themselves (or tell you explicitly to do it).
 - **Company proxy or offline machine** → Vigie needs `api.osv.dev`, `www.cisa.gov`, `api.first.org`, `www.cert.ssi.gouv.fr`, `api.deps.dev`, and for installs `registry.npmjs.org` / `pypi.org`.
