@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 — 2026-11-22
+## 1.0.0 — 2026-11-25
 
 First public version.
 
@@ -12,3 +12,5 @@ First public version.
 - **Versions**: PyPI (PEP 440), Maven and RubyGems ordering rules besides semver. Severity computed from the CVSS 3 or CVSS 4 vector when the advisory has no severity word (CVSS 4 scoring checked against the reference calculator on every base vector).
 - **Robustness**: time budget, one retry, atomic cache with corrupt-file detection, shared downloads between concurrent calls, 30-day cache cleaning, withdrawn advisories ignored.
 - **`.vigieignore`**: risks accepted by the user stop blocking and stay listed in every report.
+- **Setup**: nothing is written when one existing settings file is not valid JSON; a folder chosen with `VIGIE_HOME` is honoured and Vigie warns when it runs from another one; `setup` prints where Vigie's code is; Windows paths are written with forward slashes in hook commands and MCP entries. The install guide clones the program only (about 0.5 MB instead of about 40 MB; git 2.25+).
+- **Tested**: offline tests run on Linux, macOS and Windows with Node 18 and 22 on every change. The agent setup and the hook were run inside real Claude Code sessions on macOS only; the other agents' configurations are built from their documentation.

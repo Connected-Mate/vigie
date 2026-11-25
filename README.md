@@ -29,10 +29,12 @@ me a demonstration check instead. Ask me before anything sensitive.
 The agent installs, configures and proves it works by following [AGENT-SETUP.md](AGENT-SETUP.md). By hand, it is three commands:
 
 ```sh
-git clone --depth 1 https://github.com/Connected-Mate/vigie ~/.vigie
+git clone --depth 1 --filter=blob:none --sparse https://github.com/Connected-Mate/vigie ~/.vigie && git -C ~/.vigie sparse-checkout set bin src
 node ~/.vigie/bin/vigie.mjs check .               # the report for the project you are in
 node ~/.vigie/bin/vigie.mjs setup claude          # connect it to Claude Code in this project (also: gemini, cursor)
 ```
+
+The first line brings only the program, about half a megabyte (git 2.25 or later). A plain `git clone` works too; it also downloads the website and the film, about 40 MB.
 
 ## What a report looks like
 
@@ -98,7 +100,7 @@ vigie check npm:express              # the version a plain install would bring t
 Exit code `0`: nothing high-priority · `1`: high-priority findings (`--fail-on any` for any finding, `--fail-on none` to only report) · `2`: the check could not be completed. In CI:
 
 ```yaml
-- run: git clone --depth 1 https://github.com/Connected-Mate/vigie /tmp/vigie && node /tmp/vigie/bin/vigie.mjs check .
+- run: git clone --depth 1 --filter=blob:none --sparse https://github.com/Connected-Mate/vigie /tmp/vigie && git -C /tmp/vigie sparse-checkout set bin src && node /tmp/vigie/bin/vigie.mjs check .
 ```
 
 ## Limits — read this
