@@ -72,6 +72,8 @@ It writes, without touching anything else already there:
 
 Tell the person to restart Claude Code in this folder and accept the "new MCP server" question once. `claude mcp list`, run from the project folder, must then show `vigie`.
 
+Last run on 2026-11-25 with Claude Code 2.1.332 on macOS: a headless agent given the prompt of the website followed this guide from the public repository, in a project with dependency files and in an empty folder; a second session in that project then listed the `vigie` server as connected and was stopped by the hook on `npm install lodash@4.17.20`. Not run inside an agent on Windows or Linux (the tests run there in CI).
+
 ### Gemini CLI and Cursor (configuration format checked against their documentation on 2026-11-22; not run inside these agents)
 
 ```sh
