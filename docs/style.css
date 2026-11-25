@@ -52,6 +52,7 @@ code { font-family: var(--ff-mono); font-size: .9em; }
 .no-js .js-only, .no-js .trees { display: none !important; }
 .skip { position: absolute; left: 16px; top: -80px; z-index: 50; background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 10px; font-weight: 600; transition: top .2s var(--out); }
 .skip:focus { top: 12px; }
+.skip:focus-visible { outline-color: var(--ink); box-shadow: 0 0 0 3px var(--bg); }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 .link { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: var(--accent); transition: text-underline-offset .2s var(--out); }
 .link:hover { text-underline-offset: 6px; }
@@ -380,8 +381,8 @@ p { text-wrap: pretty; }
 .steps li::before { content: counter(s); position: absolute; top: 0; left: 0; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--ink); font: 600 1.25rem/1 var(--ff-display); transition: background-color .3s, color .3s, transform .3s var(--out); }
 .steps li:hover::before { background: var(--ink); color: var(--bg); transform: scale(1.06); }
 .steps p { color: var(--muted); }
-.cmd { margin-top: var(--s2); padding: 12px 14px; border-radius: 10px; background: color-mix(in srgb, var(--ink) 6%, transparent); border: 1px solid var(--line); font: .8rem/1.6 var(--ff-mono); white-space: pre-wrap; overflow-x: auto; scrollbar-width: thin; }
-.cmd .tok { white-space: nowrap; }
+.cmd { margin-top: var(--s2); padding: 12px 14px; border-radius: 10px; background: color-mix(in srgb, var(--ink) 6%, transparent); border: 1px solid var(--line); font: .8rem/1.6 var(--ff-mono); white-space: pre-wrap; }
+.cmd .tok { display: inline-block; max-width: 100%; white-space: normal; overflow-wrap: anywhere; vertical-align: top; }
 .out__cmd { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; font-size: .86rem; color: var(--night-muted); margin-top: -4px; }
 .out__cmd code { color: #ffd9a8; overflow-wrap: anywhere; }
 .out__cmd span::before { content: "("; } .out__cmd span::after { content: ")"; }
