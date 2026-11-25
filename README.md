@@ -1,5 +1,9 @@
 # Vigie
 
+[![Vigie — your agent checks known vulnerabilities, every time. Free, open source (MIT), no account.](docs/video/poster-en.jpg)](https://connected-mate.github.io/vigie/en/)
+
+[Website and film](https://connected-mate.github.io/vigie/en/) · [Site et film en français](https://connected-mate.github.io/vigie/) · [![tests](https://github.com/Connected-Mate/vigie/actions/workflows/tests.yml/badge.svg)](https://github.com/Connected-Mate/vigie/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-2f5d50)](LICENSE)
+
 **A lookout for known vulnerabilities. It makes your coding agent check before it installs anything, every time, across several public databases.**
 
 A *vigie* is the lookout who watches the forest from the tower and calls the fire in while it is still small. Vigie does that for the packages your project is built on: your agent gives it names and versions, Vigie cross-checks the public databases and answers what is wrong, how urgent it is, and what to do.
@@ -104,7 +108,7 @@ Exit code `0`: nothing high-priority · `1`: high-priority findings (`--fail-on 
 - CERT-FR only exposes its latest bulletins: `check_technologies` matches product names, not your exact version, and an empty answer proves nothing.
 - Without a lockfile (`package.json`, `pyproject.toml`, `pom.xml` alone), only the versions written in the file are checked, not what they pull in. Vigie says so in the report.
 - The hook reads shell commands; it is a guardrail, not a sandbox. An install hidden in a script (`make deps`, `./setup.sh`) is not seen before it runs — the check after an edit and `vigie check` in CI are there for that. Before an install, what a package pulls in is computed for a fresh install and can differ slightly from what your lockfile ends up with; the check after the install reads the real lockfile.
-- Severity comes from the advisory. Advisories that only carry a CVSS 4 vector and no severity word show as `UNKNOWN` and are treated as medium.
+- Severity comes from the advisory. When it gives no severity word, Vigie computes it from the advisory's CVSS 3 or CVSS 4 vector; an advisory with neither shows as `UNKNOWN` and is treated as medium.
 - Sub-folders are read down to 4 levels and 300 dependency files; installed code (`node_modules`, `.venv`, `vendor`…) is skipped.
 - Tested on macOS with Node 22. Written for Node 18+ and for Windows paths, not yet run there.
 - What leaves your machine: package names and versions, sent to the public APIs above. Never your code or your paths. Results are cached in `~/.cache/vigie` (`VIGIE_CACHE_DIR`), cleaned after 30 days.
@@ -143,4 +147,4 @@ Trois usages, un seul moteur :
 
 ## License
 
-MIT
+[MIT](LICENSE). Material from others (CVSS 4 scoring data, typefaces, agent logos) is credited in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). To contribute: [CONTRIBUTING.md](CONTRIBUTING.md). To report a security problem in Vigie itself: [SECURITY.md](SECURITY.md).

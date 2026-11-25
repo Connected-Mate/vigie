@@ -2,6 +2,7 @@
 import { http, cached, pool, DAY } from '../cache.mjs';
 import { compareVersions } from '../versions.mjs';
 import { cvss3Score, severityOfScore } from '../cvss.mjs';
+import { cvss4Score } from '../cvss4.mjs';
 
 export const meta = {
   id: 'osv',
@@ -102,7 +103,8 @@ export function severityOf(vuln) {
     ...(vuln.affected || []).flatMap((a) => a.severity || []),
   ].map((s) => s?.score);
   for (const a of vuln.affected || []) if (a.database_specific?.cvss) vectors.push(a.database_specific.cvss);
-  const scores = vectors.map(cvss3Score).filter((x) => x !== null);
+  // No severity word: computed from the CVSS 3 or CVSS 4 vectors; when an advisory carries several, the highest counts.
+  const scores = vectors.map((x) => cvss3Score(x) ?? cvss4Score(x)).filter((x) => x !== null);
   return (scores.length && severityOfScore(Math.max(...scores))) || 'UNKNOWN';
 }
 

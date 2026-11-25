@@ -1,0 +1,28 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', 'marketing/**', 'video-src/**', '**.md']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [18, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      # No install step: Vigie has no dependency. The tests are offline.
+      - run: npm test

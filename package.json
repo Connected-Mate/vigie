@@ -5,7 +5,7 @@
   "type": "module",
   "license": "MIT",
   "author": "Connected Mate",
-  "homepage": "https://github.com/Connected-Mate/vigie#readme",
+  "homepage": "https://connected-mate.github.io/vigie/",
   "repository": { "type": "git", "url": "git+https://github.com/Connected-Mate/vigie.git" },
   "bugs": { "url": "https://github.com/Connected-Mate/vigie/issues" },
   "bin": {
@@ -13,7 +13,7 @@
     "vigie-mcp": "src/server.mjs",
     "vigie-hook": "bin/vigie-hook.mjs"
   },
-  "files": ["bin/", "src/", "README.md", "AGENT-SETUP.md", "CHANGELOG.md", "SECURITY.md", "LICENSE"],
+  "files": ["bin/", "src/", "README.md", "AGENT-SETUP.md", "CHANGELOG.md", "SECURITY.md", "THIRD-PARTY-NOTICES.md", "LICENSE"],
   "engines": { "node": ">=18" },
   "scripts": {
     "test": "node --test",

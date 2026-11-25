@@ -1,5 +1,5 @@
 // CVSS v3.x base score from a vector string. Many advisories (Go, RustSec, PyPA) carry only the vector,
-// not a severity word. CVSS v4 needs a large lookup table: Vigie does not guess it and returns null.
+// not a severity word. CVSS v4 vectors are scored in cvss4.mjs.
 
 const W = {
   AV: { N: 0.85, A: 0.62, L: 0.55, P: 0.2 },
